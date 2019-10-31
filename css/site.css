@@ -1,0 +1,8 @@
+#bingMap {
+    width: 100vw; 
+    height: 100vh;
+}
+
+div.col-sm {
+    border: 1px solid black;
+}
