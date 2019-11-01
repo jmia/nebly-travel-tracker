@@ -7,8 +7,11 @@ $(document).ready( function () {
     
     // Setup Bing Maps
     function loadMapScenario() {
-    map = new Microsoft.Maps.Map(document.getElementById('bingMap'), {});
+        map = new Microsoft.Maps.Map(document.getElementById('bingMap'), {});
+    }
 
-    loadMapScenario();
-}
+    $(window).on('load', function() {
+        loadMapScenario();
+    });
+    
 } );
