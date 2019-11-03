@@ -32,12 +32,12 @@
             </div>
             <!-- TODO: Map, table, button, modal form -->
             <div class="row">
-                <div id="mapContainer" class="col-sm">
-                    <div id="bingMap"></div>
+                <div id="map-container" class="col-sm">
+                    <div id="bing-map"></div>
                 </div>
-                <div id="mapTableContainer" class="col-sm">
-                    <button class="btn btn-block btn-primary mb-2">Let's go somewhere</button>
-                    <table id="mapTable" class="table table-responsive-sm table-striped table-bordered">
+                <div id="map-table-container" class="col-sm">
+                    <button class="btn btn-block btn-primary mb-2" data-toggle="modal" data-target="#add-location-modal">Let's go somewhere</button>
+                    <table id="map-table" class="table table-responsive-sm table-striped table-bordered">
                         <thead>
                             <tr>
                                 <th>Location</th>
@@ -54,5 +54,60 @@
                 </div> <!-- map table container -->
             </div> <!-- row -->
         </div> <!-- container -->
+
+        <div class="modal" id="add-location-modal">
+            <div class="modal-dialog">
+              <div class="modal-content">
+          
+                <!-- Modal Header -->
+                <div class="modal-header">
+                  <h4 class="modal-title">Add a Destination</h4>
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+          
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <form action="" id="add-location-form" class="was-validated">
+                        <div class="form-group">
+                            <label for="location-name">Name</label>
+                            <input type="text" class="form-control" id="location-name" placeholder="e.g. California" name="location-name" required>
+                        </div>
+                        <div class="form-group">
+                                <label for="location-type">Type of Location</label>
+                                <select class="form-control" id="location-type">
+                                  <option>State</option>
+                                  <option>Province</option>
+                                  <option>Country</option>
+                                </select>
+                        </div>
+                        <label>Status</label>
+                        <div class="form-group">
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input" name="optradio" value="visited">Visited
+                                </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input" name="optradio" value="not-visited" checked="">Not Visited
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="date-visited">Date Visited</label>
+                            <input type="date" class="form-control" name="date-visited">
+                        </div>
+                        <div class="form-group">
+                                <label for="notes">Notes</label>
+                                <textarea class="form-control" rows="5" id="notes" placeholder="What would you like to remember about this place?"></textarea>
+                              </div>
+                        <button type="submit" class="btn btn-block btn-primary">Add</button>
+                    </form>
+                </div>
+          
+              </div>
+            </div>
+          </div>
+
     </body>
 </html>

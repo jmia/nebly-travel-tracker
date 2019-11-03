@@ -2,15 +2,17 @@ $(document).ready( function () {
     // Global variables
     var map;
 
+    // Asynchronously grab database information to populate data table
     getAllLocations().then( (data) => configureDataTables(data) );
 
+    // Load map after DOM is loaded
     $(window).on('load', function() {
         loadMapScenario();
     });
     
     // Setup Bing Maps
     function loadMapScenario() {
-        map = new Microsoft.Maps.Map(document.getElementById('bingMap'), {});
+        map = new Microsoft.Maps.Map(document.getElementById('bing-map'), {});
     }
 
     // Retrieve pre-populated data from server
@@ -31,28 +33,27 @@ $(document).ready( function () {
         // TODO: Notes set to be in 'additional info' under the plus sign
         // TODO: Something prettier with the status column
 
-        $('#mapTable').DataTable( {
+        $('#map-table').DataTable( {
             responsive: true,
-            searching: false,
             pageLength: 5,
-            lengthChange: false,
+            lengthChange: false,    // Prevents user-defined page lengths
             data: dataSet,
             columns: [
                 { data: 'location' },
                 { data: 'locationType',
                     render: function(data, type, row) {
-                        return data.substr(0,1).toUpperCase()+data.substr(1);
+                        return data.substr(0,1).toUpperCase()+data.substr(1);   // Capitalizes first word
                     } 
                 },
                 { data: 'notes' },
                 { data: 'dateVisited' },
                 { data: 'status',
                     render: function(data, type, row) {
-                        return data.substr(0,1).toUpperCase()+data.substr(1);
+                        return data.substr(0,1).toUpperCase()+data.substr(1);   // Capitalizes first word
                     }  
                 }
             ],
-            "createdRow": function( row, data, dataIndex, cells ) {
+            "createdRow": function( row, data, dataIndex, cells ) {             // Dynamic highlighting
                 if ( data["status"] == "visited" ) {
                   $(cells[4]).addClass( 'table-success' );
                 }
