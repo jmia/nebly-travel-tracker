@@ -6,6 +6,6 @@ $conn = new PDO("mysql:host=localhost;dbname=000750279", "000750279",
 die("ERROR: Couldn't connect. {$e->getMessage()}"); 
 } 
 
-// THIS IS A TEST
+// THIS IS A SECOND TEST
 
 ?>
