@@ -3,7 +3,10 @@ $(document).ready( function () {
     var map;
     
     // Setup jQuery DataTables
-    $('#mapTable').DataTable();
+    $('#mapTable').DataTable( {
+        responsive: true,
+        searching: false
+    } );
     
     // Setup Bing Maps
     function loadMapScenario() {

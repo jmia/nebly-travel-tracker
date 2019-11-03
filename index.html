@@ -11,12 +11,12 @@
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         <script type="text/javascript" src="https://www.bing.com/api/maps/mapcontrol?key=Av5vJY-MkRt2p5asCNDi1165_pNmuxmtr-ckRQzohBzefLwb6Wzc--b051-cJ7Xl"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-html5-1.6.1/datatables.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-html5-1.6.1/fh-3.1.6/r-2.2.3/datatables.min.js"></script>
         <!-- https://datatables.net/extensions/responsive/ -->
 
         <!-- Import Stylesheets for Bootstrap, DataTables -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-html5-1.6.1/datatables.min.css"/>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-html5-1.6.1/fh-3.1.6/r-2.2.3/datatables.min.css"/>
         <!-- https://datatables.net/manual/styling/theme-creator -->
         
         <!-- Import Site-specific Scripts & Stylesheets -->
@@ -34,10 +34,10 @@
             <div class="row">
                 <div id="mapContainer" class="col-sm">
                     <div id="bingMap"></div>
-                    </div>
                 </div>
                 <div id="mapTableContainer" class="col-sm">
-                    <table id="mapTable" class="table table-striped table-bordered">
+                    <button class="btn btn-block btn-primary mb-2">Let's go somewhere</button>
+                    <table id="mapTable" class="table table-responsive-sm table-striped table-bordered">
                         <thead>
                             <tr>
                                 <th>Location</th>
@@ -85,6 +85,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    
                 </div> <!-- map table container -->
             </div> <!-- row -->
         </div> <!-- container -->
