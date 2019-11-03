@@ -1,0 +1,3 @@
+# exclude db connection object
+##############################
+php\connect.php
