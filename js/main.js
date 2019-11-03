@@ -5,6 +5,12 @@ $(document).ready( function () {
     // Asynchronously grab database information to populate data table
     getAllLocations().then( (data) => configureDataTables(data) );
 
+    // Add form submission functionality
+    $('#add-location-form').submit(function () {
+        addNewLocation();
+        event.preventDefault();
+    });
+
     // Load map after DOM is loaded
     $(window).on('load', function() {
         loadMapScenario();
@@ -25,6 +31,18 @@ $(document).ready( function () {
         } catch (error) {
             console.error(error);
         }
+    }
+
+    function addNewLocation() {
+        var formData = $( "#add-location-form" ).serializeObject();
+        console.log(formData);
+        $.post('./php/backend.php',
+        { action: 'addNewLocation',
+          form: formData },
+        
+        function (data) {
+            console.log(data);
+        });
     }
 
     // Setup DataTables
@@ -63,5 +81,37 @@ $(document).ready( function () {
               }
         } );
     }
+
+/*!
+ * jQuery serializeObject - v0.2 - 1/20/2010
+ * http://benalman.com/projects/jquery-misc-plugins/
+ * 
+ * Copyright (c) 2010 "Cowboy" Ben Alman
+ * Dual licensed under the MIT and GPL licenses.
+ * http://benalman.com/about/license/
+ */
+
+// Whereas .serializeArray() serializes a form into an array, .serializeObject()
+// serializes a form into an (arguably more useful) object.
+
+(function($,undefined){
+    '$:nomunge'; // Used by YUI compressor.
+  
+    $.fn.serializeObject = function(){
+      var obj = {};
+  
+      $.each( this.serializeArray(), function(i,o){
+        var n = o.name,
+          v = o.value;
+  
+          obj[n] = obj[n] === undefined ? v
+            : $.isArray( obj[n] ) ? obj[n].concat( v )
+            : [ obj[n], v ];
+      });
+  
+      return obj;
+    };
+  
+  })(jQuery);
 
 } );

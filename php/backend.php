@@ -28,4 +28,8 @@ if($_REQUEST["action"] == "getAllLocations") {
     }
 }
 
+if($_REQUEST["action"] == "addNewLocation") {
+    echo var_dump($_REQUEST["form"]);
+}
+
 ?>

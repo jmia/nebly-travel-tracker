@@ -30,7 +30,6 @@
             <div class="row">
                 <h1>Your Travel Wishlist</h1>
             </div>
-            <!-- TODO: Map, table, button, modal form -->
             <div class="row">
                 <div id="map-container" class="col-sm">
                     <div id="bing-map"></div>
@@ -67,29 +66,29 @@
           
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <form action="" id="add-location-form" class="was-validated">
+                    <form action="index.html" id="add-location-form" class="was-validated">
                         <div class="form-group">
                             <label for="location-name">Name</label>
                             <input type="text" class="form-control" id="location-name" placeholder="e.g. California" name="location-name" required>
                         </div>
                         <div class="form-group">
                                 <label for="location-type">Type of Location</label>
-                                <select class="form-control" id="location-type">
-                                  <option>State</option>
-                                  <option>Province</option>
-                                  <option>Country</option>
+                                <select class="form-control" id="location-type" name="location-type">
+                                  <option value="state">State</option>
+                                  <option value="province">Province</option>
+                                  <option value="country">Country</option>
                                 </select>
                         </div>
                         <label>Status</label>
                         <div class="form-group">
                             <div class="form-check-inline">
                                 <label class="form-check-label">
-                                    <input type="radio" class="form-check-input" name="optradio" value="visited">Visited
+                                    <input type="radio" class="form-check-input" name="status" value="visited">Visited
                                 </label>
                             </div>
                             <div class="form-check-inline">
                                 <label class="form-check-label">
-                                    <input type="radio" class="form-check-input" name="optradio" value="not-visited" checked="">Not Visited
+                                    <input type="radio" class="form-check-input" name="status" value="not-visited" checked="">Not Visited
                                 </label>
                             </div>
                         </div>
@@ -99,8 +98,8 @@
                         </div>
                         <div class="form-group">
                                 <label for="notes">Notes</label>
-                                <textarea class="form-control" rows="5" id="notes" placeholder="What would you like to remember about this place?"></textarea>
-                              </div>
+                                <textarea class="form-control" rows="5" id="notes" name="notes" placeholder="What would you like to remember about this place?"></textarea>
+                        </div>
                         <button type="submit" class="btn btn-block btn-primary">Add</button>
                     </form>
                 </div>
