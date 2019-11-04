@@ -29,7 +29,25 @@ if($_REQUEST["action"] == "getAllLocations") {
 }
 
 if($_REQUEST["action"] == "addNewLocation") {
-    echo var_dump($_REQUEST["form"]);
+    $form = $_REQUEST["form"];
+    
+    $locationName = $form["location-name"];
+    $type = $form["location-type"];
+    $date = $form["date-visited"];
+    $status = $form["status"] == "not-visited" ? "not visited" : "visited";     // Remove the hyphen from not-visited
+    $notes = $form["notes"];
+
+    $insertCommand = "INSERT INTO $table_name (`location`, `location_type`, `date_visited`, `status`, `notes`) VALUES (?,?,?,?,?)";
+    $insertStmt = $conn->prepare($insertCommand);
+    $params = [$locationName, $type, $date, $status, $notes];
+    $insertSuccess = $insertStmt->execute($params);
+
+    if ($insertSuccess) {
+        echo 1;
+    } else {
+        echo 0;
+    }
+
 }
 
 ?>
