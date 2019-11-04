@@ -2,6 +2,14 @@ $(document).ready( function () {
     // Global variables
     var map;
 
+    // Bugs
+    // TODO: Why does $('#map-table').DataTable().ajax.reload(); 
+    //      cause data to appear in url, I don't call getLocations again so data param is null, 
+    //      can I fix ajax call somehow to work with async method without calling everything twice?
+    // TODO: Synchronicity issues in load map & get locations, why does this work consistently at home
+    //      and then break at work? Does moving it into window onload actually fix the issue or is it
+    //      working by coincidence again?
+
     // Must Have
     // TODO: Delete & Edit functionality (Do delete first) front & back
     // TODO: Edit & delete buttons on table
@@ -20,24 +28,18 @@ $(document).ready( function () {
     // TODO: Notes set to be in 'additional info' under the plus sign
     // TODO: Something prettier with the status column
     // TODO: Success message on page refresh, localStorage?
-    // TODO: Why does $('#map-table').DataTable().ajax.reload(); 
-    //      cause data to appear in url & null data param, fix ajax call somehow?
     // TODO: Cards on small screen size
     // TODO: Logo
-
-
-            
-
-    // Asynchronously grab database information to populate data table & map
-    getAllLocations()
-        .then( (data) => configureDataTables(data) )
-        .then( (data) => getLocationBoundaries(data) );
 
     configureForm();
 
     // Load map when DOM finishes rendering
     $(window).on('load', function() {
         loadMapScenario();
+        // Asynchronously grab database information to populate data table & map
+        getAllLocations()
+        .then( (data) => configureDataTables(data) )
+        .then( (data) => getLocationBoundaries(data) );
     });
 
     // Send form data to add new location to table
@@ -106,6 +108,7 @@ $(document).ready( function () {
     // Setup Bing Maps
     function loadMapScenario() {
         map = new Microsoft.Maps.Map(document.getElementById('bing-map'), {
+            center: new Microsoft.Maps.Location(45.7019294,-94.5174798,4.9),
             zoom: 3
         });
     }
@@ -124,6 +127,7 @@ $(document).ready( function () {
 
     function getLocationBoundaries(dataSet) {
 
+        // Split entries into states & countries for separate entity types
         var countries = [];
         var statesAndProvinces = [];
 
