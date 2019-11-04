@@ -23,6 +23,7 @@ $(document).ready( function () {
 
     // Ought to have
     // TODO: Change colour of polygon based on status
+    // TODO: Clear form
     
     // Nice to have
     // TODO: Notes set to be in 'additional info' under the plus sign
@@ -76,7 +77,8 @@ $(document).ready( function () {
                     render: function(data, type, row) {
                         return data.substr(0,1).toUpperCase()+data.substr(1);   // Capitalizes first word
                     }  
-                }
+                },
+                { defaultContent: "<button>Edit</button> <button>Delete</button>" }
             ],
             "createdRow": function( row, data, dataIndex, cells ) {             // Dynamic highlighting
                 if ( data["status"] == "visited" ) {
