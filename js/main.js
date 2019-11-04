@@ -2,10 +2,37 @@ $(document).ready( function () {
     // Global variables
     var map;
 
-    // Asynchronously grab database information to populate data table
+    // Must Have
+    // TODO: Delete & Edit functionality (Do delete first) front & back
+    // TODO: Edit & delete buttons on table
+    // TODO: New modal for edit or same modal?
+    // TODO: Responsiveness (stack columns on small screen size)
+    // TODO: Remove countries? Change relevant tables in database & columns on datatables
+    // TODO: Hide date visited form input if status is 'not visited'
+    // TODO: Prevent resize of map on pagination
+    // TODO: Quick add a visited location by clicking the map
+    // TODO: Customize colours of map legend
+
+    // Ought to have
+    // TODO: Change colour of polygon based on status
+    
+    // Nice to have
+    // TODO: Notes set to be in 'additional info' under the plus sign
+    // TODO: Something prettier with the status column
+    // TODO: Success message on page refresh, localStorage?
+    // TODO: Why does $('#map-table').DataTable().ajax.reload(); 
+    //      cause data to appear in url & null data param, fix ajax call somehow?
+    // TODO: Cards on small screen size
+    // TODO: Logo
+
+
+            
+
+    // Asynchronously grab database information to populate data table & map
     getAllLocations()
         .then( (data) => configureDataTables(data) )
         .then( (data) => getLocationBoundaries(data) );
+
     configureForm();
 
     // Load map when DOM finishes rendering
@@ -29,12 +56,6 @@ $(document).ready( function () {
 
     // Setup DataTables
     async function configureDataTables(dataSet) {
-
-        // TODO: Notes set to be in 'additional info' under the plus sign
-        // TODO: Something prettier with the status column
-
-        console.log(dataSet);
-
         $('#map-table').DataTable( {
             responsive: true,
             pageLength: 5,
@@ -71,13 +92,9 @@ $(document).ready( function () {
     // Setup default state of add location form
     function configureForm() {
 
-        // TODO: Hide date visited form input if status is 'not visited'
-        // TODO: Success message on page refresh, localStorage?
-
         // Add form submission functionality
         $('#add-location-form').submit(function () {
             addNewLocation();
-            //$('#map-table').DataTable().ajax.reload();    // using this causes data to appear in url & null data param
             document.location.reload();
             $('#add-location-modal').modal('hide');
             event.preventDefault();
@@ -107,9 +124,6 @@ $(document).ready( function () {
 
     function getLocationBoundaries(dataSet) {
 
-        // TODO: Remove countries? Change relevant tables in database
-        // TODO: Change colour of polygon based on status
-
         var countries = [];
         var statesAndProvinces = [];
 
@@ -120,9 +134,6 @@ $(document).ready( function () {
                 statesAndProvinces.push(dataSet[i]["location"]);
             }
         }
-
-        console.log(countries);
-        console.log(statesAndProvinces);
 
         //Create an array of locations to get the boundaries of
         var geoDataRequestOptions = {
