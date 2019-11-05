@@ -3,17 +3,17 @@ $(document).ready( function () {
     var map;
 
     // Bugs
-    // TODO: Why does $('#map-table').DataTable().ajax.reload(); 
-    //      cause data to appear in url, I don't call getLocations again so data param is null, 
-    //      can I fix ajax call somehow to work with async method without calling everything twice?
-    // TODO: Synchronicity issues in load map & get locations, why does this work consistently at home
-    //      and then break at work? Does moving it into window onload actually fix the issue or is it
-    //      working by coincidence again?
+    // TODO: Clear form on submit
+    // TODO: Make add location async
+    // TODO: PHP backend returns object with error message
+    // TODO: Handle 404 or timeout errors etc on console log in network requests (// TODO: Does the result contain an error?)
+    // TODO: Push new entity to polygons list
+    // TODO: Access data from table for polygons call
 
     // Must Have
     // TODO: Delete & Edit functionality (Do delete first) front & back
     // TODO: Edit & delete buttons on table
-    // TODO: New modal for edit or same modal?
+    // TODO: Edit modal & delete confirmation
     // TODO: Responsiveness (stack columns on small screen size)
     // TODO: Remove countries? Change relevant tables in database & columns on datatables
     // TODO: Hide date visited form input if status is 'not visited'
@@ -23,24 +23,29 @@ $(document).ready( function () {
 
     // Ought to have
     // TODO: Change colour of polygon based on status
-    // TODO: Clear form
+    // TODO: Clear form button
+    
     
     // Nice to have
     // TODO: Notes set to be in 'additional info' under the plus sign
     // TODO: Something prettier with the status column
-    // TODO: Success message on page refresh, localStorage?
+    // TODO: Success message on form submit, error message
     // TODO: Cards on small screen size
     // TODO: Logo
+    // TODO: Store polygon information in session storage for quick DB access?
 
-    configureForm();
+
+    $(document).on('click', '.delete-button', function () {
+        var id = this.id.replace(/delete-id-/, '');
+        console.log("button clicked on id-> "+ id);
+        deleteLocation(id);
+    });
 
     // Load map when DOM finishes rendering
     $(window).on('load', function() {
         loadMapScenario();
-        // Asynchronously grab database information to populate data table & map
-        getAllLocations()
-        .then( (data) => configureDataTables(data) )
-        .then( (data) => getLocationBoundaries(data) );
+        configureForm();
+        configureDataTables();
     });
 
     // Send form data to add new location to table
@@ -58,12 +63,18 @@ $(document).ready( function () {
     }
 
     // Setup DataTables
-    async function configureDataTables(dataSet) {
+    function configureDataTables() {
         $('#map-table').DataTable( {
             responsive: true,
             pageLength: 5,
             lengthChange: false,    // Prevents user-defined page lengths
-            data: dataSet,
+            ajax: {
+                url: './php/backend.php',
+                data: {
+                    action: 'getAllLocations'
+                },
+                dataSrc: ''
+            },
             columns: [
                 { data: 'location' },
                 { data: 'locationType',
@@ -78,7 +89,11 @@ $(document).ready( function () {
                         return data.substr(0,1).toUpperCase()+data.substr(1);   // Capitalizes first word
                     }  
                 },
-                { defaultContent: "<button>Edit</button> <button>Delete</button>" }
+                { render: function ( data, type, row ) {
+                        var buttonID = "delete-id-"+row.id;
+                        return '<button id='+buttonID+' class="btn btn-danger delete-button">Delete</button>';
+                    }
+                }
             ],
             "createdRow": function( row, data, dataIndex, cells ) {             // Dynamic highlighting
                 if ( data["status"] == "visited" ) {
@@ -90,7 +105,9 @@ $(document).ready( function () {
               }
         } );
 
-        return dataSet;
+        $('#map-table').on('xhr.dt', function (e, settings, json, xhr) {
+            getLocationBoundaries(json);
+        });
     }
 
     // Setup default state of add location form
@@ -99,12 +116,22 @@ $(document).ready( function () {
         // Add form submission functionality
         $('#add-location-form').submit(function () {
             addNewLocation();
-            document.location.reload();
+            //document.location.reload();
             $('#add-location-modal').modal('hide');
+            $('#map-table').DataTable().ajax.reload();
             event.preventDefault();
         });
         // Set dropdown list to deselected to force user to choose
         $("#location-type").prop("selectedIndex", -1);
+    }
+
+    function deleteLocation(id) {
+        $.post('./php/backend.php',
+        { action: 'deleteLocation',
+            id: id },
+        function (data) {
+            console.log(data);
+        });
     }
     
     // Setup Bing Maps
@@ -115,17 +142,17 @@ $(document).ready( function () {
         });
     }
 
-    // Retrieve pre-populated data from server
-    async function getAllLocations() {
-        let result; 
-        try {
-            result = await $.get('./php/backend.php',
-                        { action: 'getAllLocations' });
-            return jQuery.parseJSON(result);
-        } catch (error) {
-            console.error(error);
-        }
-    }
+    // // Retrieve pre-populated data from server
+    // async function getAllLocations() {
+    //     let result; 
+    //     try {
+    //         result = await $.get('./php/backend.php',
+    //                     { action: 'getAllLocations' });
+    //         return jQuery.parseJSON(result);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // }
 
     function getLocationBoundaries(dataSet) {
 

@@ -19,7 +19,8 @@ if($_REQUEST["action"] == "getAllLocations") {
                                 "locationType"  => $row["location_type"], 
                                 "dateVisited"   => $row["date_visited"], 
                                 "status"        => $row["status"], 
-                                "notes"         => $row["notes"]);
+                                "notes"         => $row["notes"],
+                                "id"            => $row["id"]);
             array_push($result, $location);
         }
         echo json_encode($result);
@@ -48,6 +49,12 @@ if($_REQUEST["action"] == "addNewLocation") {
         echo 0;
     }
 
+}
+
+if($_REQUEST["action"] == "deleteLocation") {
+    $id = $_REQUEST["id"];
+
+    echo "php is ready to delete some stuff";
 }
 
 ?>
