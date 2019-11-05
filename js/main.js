@@ -34,6 +34,13 @@ $(document).ready( function () {
     // TODO: Logo
     // TODO: Store polygon information in session storage for quick DB access?
 
+
+    $(document).on('click', '.delete-button', function () {
+        var id = this.id.replace(/delete-id-/, '');
+        console.log("button clicked on id-> "+ id);
+        deleteLocation(id);
+    });
+
     // Load map when DOM finishes rendering
     $(window).on('load', function() {
         loadMapScenario();
@@ -82,7 +89,11 @@ $(document).ready( function () {
                         return data.substr(0,1).toUpperCase()+data.substr(1);   // Capitalizes first word
                     }  
                 },
-                { defaultContent: "<button>Edit</button> <button>Delete</button>" }
+                { render: function ( data, type, row ) {
+                        var buttonID = "delete-id-"+row.id;
+                        return '<button id='+buttonID+' class="btn btn-danger delete-button">Delete</button>';
+                    }
+                }
             ],
             "createdRow": function( row, data, dataIndex, cells ) {             // Dynamic highlighting
                 if ( data["status"] == "visited" ) {
@@ -95,7 +106,6 @@ $(document).ready( function () {
         } );
 
         $('#map-table').on('xhr.dt', function (e, settings, json, xhr) {
-            console.log(json);
             getLocationBoundaries(json);
         });
     }
@@ -113,6 +123,15 @@ $(document).ready( function () {
         });
         // Set dropdown list to deselected to force user to choose
         $("#location-type").prop("selectedIndex", -1);
+    }
+
+    function deleteLocation(id) {
+        $.post('./php/backend.php',
+        { action: 'deleteLocation',
+            id: id },
+        function (data) {
+            console.log(data);
+        });
     }
     
     // Setup Bing Maps
