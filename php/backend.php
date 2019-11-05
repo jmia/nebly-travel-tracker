@@ -38,12 +38,12 @@ if($_REQUEST["action"] == "addNewLocation") {
     $status = $form["status"] == "not-visited" ? "not visited" : "visited";     // Remove the hyphen from not-visited
     $notes = $form["notes"];
 
-    $insertCommand = "INSERT INTO $table_name (`location`, `location_type`, `date_visited`, `status`, `notes`) VALUES (?,?,?,?,?)";
-    $insertStmt = $conn->prepare($insertCommand);
+    $command = "INSERT INTO $table_name (`location`, `location_type`, `date_visited`, `status`, `notes`) VALUES (?,?,?,?,?)";
+    $stmt = $conn->prepare($command);
     $params = [$locationName, $type, $date, $status, $notes];
-    $insertSuccess = $insertStmt->execute($params);
+    $success = $stmt->execute($params);
 
-    if ($insertSuccess) {
+    if ($success) {
         echo 1;
     } else {
         echo 0;
@@ -54,7 +54,16 @@ if($_REQUEST["action"] == "addNewLocation") {
 if($_REQUEST["action"] == "deleteLocation") {
     $id = $_REQUEST["id"];
 
-    echo "php is ready to delete some stuff";
+    $command = "DELETE FROM $table_name WHERE `id` = ?";
+    $stmt = $conn->prepare($command);
+    $params = [$id];
+    $success = $stmt->execute($params);
+
+    if ($success) {
+        echo 1;
+    } else {
+        echo 0;
+    }
 }
 
 ?>

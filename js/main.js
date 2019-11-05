@@ -12,7 +12,7 @@ $(document).ready( function () {
 
     // Must Have
     // TODO: Delete & Edit functionality (Do delete first) front & back
-    // TODO: Edit & delete buttons on table
+    // TODO: Edit buttons on table
     // TODO: Edit modal & delete confirmation
     // TODO: Responsiveness (stack columns on small screen size)
     // TODO: Remove countries? Change relevant tables in database & columns on datatables
@@ -24,7 +24,6 @@ $(document).ready( function () {
     // Ought to have
     // TODO: Change colour of polygon based on status
     // TODO: Clear form button
-    
     
     // Nice to have
     // TODO: Notes set to be in 'additional info' under the plus sign
@@ -38,7 +37,10 @@ $(document).ready( function () {
     $(document).on('click', '.delete-button', function () {
         var id = this.id.replace(/delete-id-/, '');
         console.log("button clicked on id-> "+ id);
-        deleteLocation(id);
+
+        if (confirm("Are you sure you want to delete this entry?")) {
+            deleteLocation(id);
+        }
     });
 
     // Load map when DOM finishes rendering
@@ -58,8 +60,8 @@ $(document).ready( function () {
         
         function (data) {
             console.log(data);
-
         });
+        $('#map-table').DataTable().ajax.reload();
     }
 
     // Setup DataTables
@@ -118,7 +120,6 @@ $(document).ready( function () {
             addNewLocation();
             //document.location.reload();
             $('#add-location-modal').modal('hide');
-            $('#map-table').DataTable().ajax.reload();
             event.preventDefault();
         });
         // Set dropdown list to deselected to force user to choose
@@ -129,9 +130,11 @@ $(document).ready( function () {
         $.post('./php/backend.php',
         { action: 'deleteLocation',
             id: id },
+
         function (data) {
             console.log(data);
         });
+        $('#map-table').DataTable().ajax.reload();
     }
     
     // Setup Bing Maps
@@ -155,6 +158,7 @@ $(document).ready( function () {
     // }
 
     function getLocationBoundaries(dataSet) {
+        map.entities.clear();
 
         // Split entries into states & countries for separate entity types
         var countries = [];
