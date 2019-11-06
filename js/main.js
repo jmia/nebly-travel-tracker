@@ -74,8 +74,8 @@ $(document).ready( function () {
         configureDataTables();
 
         var x = window.matchMedia("(max-width: 576px)")
-        stickyButton(x) // Call listener function at run time
-        x.addListener(stickyButton) // Attach listener function on state changes
+        adjustMobileSettings(x) // Call listener function at run time
+        x.addListener(adjustMobileSettings) // Attach listener function on state changes
     });
 
     // Send form data to add new location to table
@@ -241,11 +241,22 @@ $(document).ready( function () {
     function getLocationBoundaries(locationData) {
         map.entities.clear();
 
-        var locations = [];
+        // Locations must be split to colour code the results
+        var visitedLocations = [];
+        var unvisitedLocations = [];
 
-        // Extract location names for search
+        // Extract unique location names by status
         for (var i = 0; i < locationData.length; i++) {
-            locations.push(locationData[i]["location"]);
+
+            if (locationData[i]["status"] == "not visited") {
+                if (!(unvisitedLocations.includes(locationData[i]["location"]))) {
+                    unvisitedLocations.push(locationData[i]["location"]);
+                }
+            } else {
+                if (!(visitedLocations.includes(locationData[i]["location"]))) {
+                    visitedLocations.push(locationData[i]["location"]);
+                }
+            }
         }
 
         //Create an array of locations to get the boundaries of
@@ -253,9 +264,34 @@ $(document).ready( function () {
             entityType: 'AdminDivision1',
             getAllPolygons: false
         };
+
         Microsoft.Maps.loadModule('Microsoft.Maps.SpatialDataService', function () {
+            
+            // Set colour for not visited locations
+            var polygonStyle = {
+                fillColor: 'rgba(255,255,0,0.4)',
+                strokeColor: '#aa6c39',
+                strokeThickness: 2
+            };
             //Use the GeoData API manager to get the boundary
-            Microsoft.Maps.SpatialDataService.GeoDataAPIManager.getBoundary(locations, geoDataRequestOptions, map, function (data) {
+            Microsoft.Maps.SpatialDataService.GeoDataAPIManager.getBoundary(unvisitedLocations, geoDataRequestOptions, map, function (data) {
+                if (data.results && data.results.length > 0) {
+                    map.entities.push(data.results[0].Polygons);
+                }
+            }, polygonStyle, function errCallback(callbackState, networkStatus, statusMessage) {
+                console.log(callbackState);
+                console.log(networkStatus);
+                console.log(statusMessage);
+            });
+
+            // Set colour for visited locations
+            // var polygonStyle = {
+            //     fillColor: 'rgba(161,224,255,0.4)',
+            //     strokeColor: '#a495b2',
+            //     strokeThickness: 2
+            // };
+            //Use the GeoData API manager to get the boundary
+            Microsoft.Maps.SpatialDataService.GeoDataAPIManager.getBoundary(visitedLocations, geoDataRequestOptions, map, function (data) {
                 if (data.results && data.results.length > 0) {
                     map.entities.push(data.results[0].Polygons);
                 }
