@@ -194,10 +194,10 @@ $(document).ready( function () {
         var statesAndProvinces = [];
 
         for (var i = 0; i < locations.length; i++) {
-            if (dataSet[i]["locationType"] == "country") {
-                countries.push(dataSet[i]["location"]);
+            if (locations[i]["locationType"] == "country") {
+                countries.push(locations[i]["location"]);
             } else {
-                statesAndProvinces.push(dataSet[i]["location"]);
+                statesAndProvinces.push(locations[i]["location"]);
             }
         }
 
