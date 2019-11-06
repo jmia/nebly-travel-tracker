@@ -1,6 +1,6 @@
 $(document).ready( function () {
     // Global variables
-    var map;
+    var map, stuffINeed;
 
     $(document).on('click', '.delete-button', function () {
         var id = this.id.replace(/delete-id-/, '');
@@ -8,6 +8,30 @@ $(document).ready( function () {
             deleteLocation(id);
         }
     });
+
+    // Configure modal to work for edit & add
+    $('#location-modal').on('show.bs.modal', function (event) {
+        let button = $(event.relatedTarget); // Button that triggered the modal
+        let action = button.data('action');
+        console.log(action);
+
+        if (action == 'edit') {
+            let id = button.data('id');
+
+            // Why doesn't this get any data?
+            getLocationById(id).then( (data) => function(data) {
+                $('#entry-id').val(id);
+                $('#location-name').val(data['location']);
+                //$('#location-type').val(location['locationType']);
+                // TODO: status
+                $('#date-visited').val(data['dateVisited']);
+                $('#notes').val(data['notes']);
+
+                $('#submit-location-button').text('Update');
+            });
+        }
+
+        });
 
     // Load map when DOM finishes rendering
     $(window).on('load', function() {
@@ -18,7 +42,7 @@ $(document).ready( function () {
 
     // Send form data to add new location to table
     function addNewLocation() {
-        var formData = $( "#add-location-form" ).serializeObject();
+        let formData = $( "#location-form" ).serializeObject();
         console.log(formData);
         $.post('./php/backend.php',
         { action: 'addNewLocation',
@@ -28,6 +52,10 @@ $(document).ready( function () {
             console.log(data);
         });
         $('#map-table').DataTable().ajax.reload();
+    }
+
+    function clearForm() {
+
     }
 
     // Setup DataTables
@@ -72,8 +100,10 @@ $(document).ready( function () {
                 { // uses ID for rendering edit & delete buttons
                     responsivePriority: 2,
                     render: function ( data, type, row ) {
-                        var buttonID = "delete-id-"+row.id;
-                        return '<button id='+buttonID+' class="btn btn-danger delete-button">Delete</button>';
+                        var deleteButtonId = "delete-id-"+row.id;
+                        var editButtonId = "edit-id-"+row.id;
+                        return '<button id='+deleteButtonId+' class="btn btn-danger delete-button">Delete</button>'+
+                        '<button id='+editButtonId+' data-toggle="modal" data-target="#location-modal" data-action="edit" data-id='+row.id+' class="btn btn-primary">Edit</button>';
                     }
                 }
             ],
@@ -87,6 +117,7 @@ $(document).ready( function () {
               }
         } );
 
+        // Redraw the map whenever new Ajax calls are made
         $('#map-table').on('xhr.dt', function (e, settings, json, xhr) {
             getLocationBoundaries(json);
         });
@@ -96,12 +127,17 @@ $(document).ready( function () {
     function configureForm() {
 
         // Add form submission functionality
-        $('#add-location-form').submit(function () {
-            addNewLocation();
-            //document.location.reload();
-            $('#add-location-modal').modal('hide');
+        $('#location-form').on('submit', function(event) {
+            if ($('#entry_id').val() != "") {
+                // Edit location
+            } else {
+                addNewLocation();
+            }
+            // Clear form (particularly ID)
+            $('#location-modal').modal('hide');
             event.preventDefault();
         });
+
         // Set dropdown list to deselected to force user to choose
         $("#location-type").prop("selectedIndex", -1);
     }
@@ -116,6 +152,23 @@ $(document).ready( function () {
         });
         $('#map-table').DataTable().ajax.reload();
     }
+
+    function editLocation(id) {
+
+    }
+
+    async function getLocationById(id) {
+        let result; 
+        try {
+            result = await $.get('./php/backend.php',
+                        { action: 'getLocationById',
+                            id: id });
+            console.log(result);
+            return jQuery.parseJSON(result);
+        } catch (error) {
+            console.error(error);
+        }
+    }
     
     // Setup Bing Maps
     function loadMapScenario() {
@@ -124,18 +177,6 @@ $(document).ready( function () {
             zoom: 3
         });
     }
-
-    // // Retrieve pre-populated data from server
-    // async function getAllLocations() {
-    //     let result; 
-    //     try {
-    //         result = await $.get('./php/backend.php',
-    //                     { action: 'getAllLocations' });
-    //         return jQuery.parseJSON(result);
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // }
 
     function getLocationBoundaries(dataSet) {
         map.entities.clear();

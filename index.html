@@ -35,7 +35,7 @@
                     <div id="bing-map"></div>
                 </div>
                 <div id="map-table-container" class="col-sm-6">
-                    <button class="btn btn-block btn-primary mb-2" data-toggle="modal" data-target="#add-location-modal">Let's go somewhere</button>
+                    <button class="btn btn-block btn-primary mb-2" data-toggle="modal" data-target="#location-modal" data-action="create">Let's go somewhere</button>
                     <table id="map-table" class="table table-responsive-sm table-striped table-bordered">
                         <thead>
                             <tr>
@@ -55,7 +55,7 @@
             </div> <!-- row -->
         </div> <!-- container -->
 
-        <div class="modal" id="add-location-modal">
+        <div class="modal fade" id="location-modal">
             <div class="modal-dialog">
               <div class="modal-content">
           
@@ -67,7 +67,10 @@
           
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <form action="index.html" id="add-location-form" class="was-validated">
+                    <form action="index.html" id="location-form" class="was-validated">
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="entry-id" value="" />
+                        </div>
                         <div class="form-group">
                             <label for="location-name">Name</label>
                             <input type="text" class="form-control" id="location-name" placeholder="e.g. California" name="location-name" required>
@@ -101,7 +104,7 @@
                                 <label for="notes">Notes</label>
                                 <textarea class="form-control" rows="5" id="notes" name="notes" placeholder="What would you like to remember about this place?"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-block btn-primary">Add</button>
+                        <button type="submit" id="submit-location-button" class="btn btn-block btn-primary">Add</button>
                     </form>
                 </div>
           

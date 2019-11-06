@@ -66,4 +66,30 @@ if($_REQUEST["action"] == "deleteLocation") {
     }
 }
 
+if($_REQUEST["action"] == "getLocationById") {
+    $id = $_REQUEST["id"];
+
+    $result = array();
+    $command = "SELECT * FROM $table_name WHERE `id` = ?";
+    $stmt = $conn->prepare($command);
+    $params = [$id];
+    $success = $stmt->execute($params);
+
+    if ($success) {
+        while ($row = $stmt->fetch()) {
+            $location = array(  "location"      => $row["location"], 
+                                "locationType"  => $row["location_type"], 
+                                "dateVisited"   => $row["date_visited"], 
+                                "status"        => $row["status"], 
+                                "notes"         => $row["notes"],
+                                "id"            => $row["id"]);
+            array_push($result, $location);
+        }
+        echo json_encode($result);
+    } else {
+        echo "ERROR";
+    }
+    
+}
+
 ?>
