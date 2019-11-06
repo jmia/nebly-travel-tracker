@@ -2,42 +2,8 @@ $(document).ready( function () {
     // Global variables
     var map;
 
-    // Bugs
-    // TODO: Clear form on submit
-    // TODO: Make add location async
-    // TODO: PHP backend returns object with error message
-    // TODO: Handle 404 or timeout errors etc on console log in network requests (// TODO: Does the result contain an error?)
-    // TODO: Push new entity to polygons list
-    // TODO: Access data from table for polygons call
-
-    // Must Have
-    // TODO: Delete & Edit functionality (Do delete first) front & back
-    // TODO: Edit buttons on table
-    // TODO: Edit modal & delete confirmation
-    // TODO: Responsiveness (stack columns on small screen size)
-    // TODO: Remove countries? Change relevant tables in database & columns on datatables
-    // TODO: Hide date visited form input if status is 'not visited'
-    // TODO: Prevent resize of map on pagination
-    // TODO: Quick add a visited location by clicking the map
-    // TODO: Customize colours of map legend
-
-    // Ought to have
-    // TODO: Change colour of polygon based on status
-    // TODO: Clear form button
-    
-    // Nice to have
-    // TODO: Notes set to be in 'additional info' under the plus sign
-    // TODO: Something prettier with the status column
-    // TODO: Success message on form submit, error message
-    // TODO: Cards on small screen size
-    // TODO: Logo
-    // TODO: Store polygon information in session storage for quick DB access?
-
-
     $(document).on('click', '.delete-button', function () {
         var id = this.id.replace(/delete-id-/, '');
-        console.log("button clicked on id-> "+ id);
-
         if (confirm("Are you sure you want to delete this entry?")) {
             deleteLocation(id);
         }
@@ -66,6 +32,11 @@ $(document).ready( function () {
 
     // Setup DataTables
     function configureDataTables() {
+
+        // TODO: Deprecate locationType
+        // TODO: Change status to badges instead of cell highlight
+        // TODO: Change 'delete' text to fontawesome icons
+
         $('#map-table').DataTable( {
             responsive: true,
             pageLength: 5,
@@ -78,20 +49,29 @@ $(document).ready( function () {
                 dataSrc: ''
             },
             columns: [
-                { data: 'location' },
+                { data: 'location',
+                    className: 'all' },
                 { data: 'locationType',
+                    responsivePriority: 5,
                     render: function(data, type, row) {
                         return data.substr(0,1).toUpperCase()+data.substr(1);   // Capitalizes first word
                     } 
                 },
-                { data: 'notes' },
-                { data: 'dateVisited' },
+                { data: 'notes',
+                    className: 'none' },    // No priority, should push to child row
+                { data: 'dateVisited',
+                    type: 'date',
+                    responsivePriority: 3 
+                },
                 { data: 'status',
+                    responsivePriority: 4,
                     render: function(data, type, row) {
                         return data.substr(0,1).toUpperCase()+data.substr(1);   // Capitalizes first word
                     }  
                 },
-                { render: function ( data, type, row ) {
+                { // uses ID for rendering edit & delete buttons
+                    responsivePriority: 2,
+                    render: function ( data, type, row ) {
                         var buttonID = "delete-id-"+row.id;
                         return '<button id='+buttonID+' class="btn btn-danger delete-button">Delete</button>';
                     }
