@@ -72,10 +72,10 @@ if($_REQUEST["action"] == "addNewLocation") {
 
 }
 
-if($_REQUEST["action"] == "editLocation") {
+if($_REQUEST["action"] == "updateLocation") {
     $form = $_REQUEST["form"];
+    $id = $_REQUEST["id"];
     
-    $id = $form["id"];
     $locationName = $form["location-name"];
     $date = $form["date-visited"] == "" ? NULL : $form["date-visited"];
     $status = $form["status"] == "not-visited" ? "not visited" : "visited";     // Remove the hyphen from not-visited

@@ -13,25 +13,40 @@ $(document).ready( function () {
     $('#location-modal').on('show.bs.modal', function (event) {
         let button = $(event.relatedTarget); // Button that triggered the modal
         let action = button.data('action');
-        console.log(action);
 
         if (action == 'edit') {
             let id = button.data('id');
 
-            // Why does this call succeed but callback never fires?
-            getLocationById(id).then( (data) => function(data) {
-                console.log(data);
-                $('#entry-id').val(id);
-                $('#location-name').val(data['location']);
-                // TODO: status
-                $('#date-visited').val(data['dateVisited']);
-                $('#notes').val(data['notes']);
-
-                $('#submit-location-button').text('Update');
-            });
+            try {
+                $.get('./php/backend.php',
+                        { action: 'getLocationById',
+                            id: id },
+                function (data) {
+                    data = jQuery.parseJSON(data);
+                    data = data[0];
+                    console.log(data);
+                    $('#entry-id').val(id);
+                    $('#location-name').val(data['location']);
+                    $('#date-visited').val(data['dateVisited']);
+                    $('#notes').val(data['notes']);
+                    if (data['status'] == 'not visited') {
+                        $("input[name=status][value='not-visited']").prop("checked", true);
+                    } else {
+                        $("input[name=status][value='visited']").prop("checked", true);
+                    }
+                    
+                    $('#submit-location-button').text('Update');
+                });
+            } catch (error) {
+                console.error(error);
+            }
         }
 
-        });
+    });
+
+    $('#location-modal').on('hidden.bs.modal', function (e) {
+        clearForm();
+      })
 
     // Load map when DOM finishes rendering
     $(window).on('load', function() {
@@ -42,7 +57,6 @@ $(document).ready( function () {
 
     // Send form data to add new location to table
     function addNewLocation() {
-        console.log("add called");
         let formData = $( "#location-form" ).serializeObject();
         console.log(formData);
         $.post('./php/backend.php',
@@ -58,19 +72,14 @@ $(document).ready( function () {
     function clearForm() {
         $('#entry-id').val('');
         $('#location-name').val('');
-        $("input[name=status][value='not visited']").prop("checked", true);
+        $("input[name=status][value='not-visited']").prop("checked", true);
         $('#date-visited').val('');
-        $('#notes').val('');
         $('#notes').val('');
         $('#submit-location-button').text('Add');
     }
 
     // Setup DataTables
     function configureDataTables() {
-
-        // TODO: Deprecate locationType
-        // TODO: Change status to badges instead of cell highlight
-        // TODO: Change 'delete' text to fontawesome icons
 
         $('#map-table').DataTable( {
             responsive: true,
@@ -129,12 +138,12 @@ $(document).ready( function () {
 
         // Add form submission functionality
         $('#location-form').on('submit', function(event) {
-            if ($('#entry-id').val() != "") {
-                // Edit location
+            let id = $('#entry-id').val();
+            if (id != "") {
+                editLocation(id);
             } else {
                 addNewLocation();
             }
-            clearForm();
             $('#location-modal').modal('hide');
             event.preventDefault();
         });
@@ -152,20 +161,16 @@ $(document).ready( function () {
     }
 
     function editLocation(id) {
-
-    }
-
-    async function getLocationById(id) {
-        let result; 
-        try {
-            result = await $.get('./php/backend.php',
-                        { action: 'getLocationById',
-                            id: id });
-            console.log(result);
-            return jQuery.parseJSON(result);
-        } catch (error) {
-            console.error(error);
-        }
+        let formData = $( "#location-form" ).serializeObject();
+        $.post('./php/backend.php',
+        { action: 'updateLocation',
+            form: formData,
+            id: id },
+        
+        function (data) {
+            console.log(data);
+        });
+        $('#map-table').DataTable().ajax.reload();
     }
     
     // Setup Bing Maps
