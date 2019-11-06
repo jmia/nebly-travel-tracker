@@ -92,6 +92,12 @@ $(document).ready( function () {
                 dataSrc: ''
             },
             columns: [
+                {
+                    className: 'details-control',
+                    orderable:      false,
+                    data:           null,
+                    defaultContent: ''
+                },
                 { data: 'location',
                     className: 'all' },
                 { data: 'notes',
@@ -103,7 +109,11 @@ $(document).ready( function () {
                 { data: 'status',
                     responsivePriority: 4,
                     render: function(data, type, row) {
-                        return data.substr(0,1).toUpperCase()+data.substr(1);   // Capitalizes first word
+                        if (row.status == "visited") {
+                            return '<i class="fas fa-check-square"></i>';
+                        } else {
+                            return '';
+                        }
                     }  
                 },
                 { // uses ID for rendering edit & delete buttons
@@ -115,21 +125,29 @@ $(document).ready( function () {
                         '<button id='+editButtonId+' data-toggle="modal" data-target="#location-modal" data-action="edit" data-id='+row.id+' class="btn btn-primary"><i class="fas fa-edit"></i></button>';
                     }
                 }
-            ],
-            "createdRow": function( row, data, dataIndex, cells ) {             // Dynamic highlighting
-                if ( data["status"] == "visited" ) {
-                  $(cells[3]).addClass( 'table-success' );
-                }
-                else if ( data["status"] == "not visited" ) {
-                    $(cells[3]).addClass( 'table-warning' );
-                  }
-              }
+            ]
         } );
 
         // Redraw the map whenever new Ajax calls are made
         $('#map-table').on('xhr.dt', function (e, settings, json, xhr) {
             getLocationBoundaries(json);
         });
+
+        $('#map-table tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = table.row( tr );
+     
+            if ( row.child.isShown() ) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child( format(row.data()) ).show();
+                tr.addClass('shown');
+            }
+        } );
     }
 
     // Setup default state of add location form
