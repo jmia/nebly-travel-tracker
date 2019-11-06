@@ -24,7 +24,6 @@ $(document).ready( function () {
                 function (data) {
                     data = jQuery.parseJSON(data);
                     data = data[0];
-                    console.log(data);
                     $('#entry-id').val(id);
                     $('#location-name').val(data['location']);
                     $('#date-visited').val(data['dateVisited']);
@@ -34,6 +33,7 @@ $(document).ready( function () {
                     } else {
                         $("input[name=status][value='visited']").prop("checked", true);
                     }
+                    $("input[name=status]").trigger('change');
                     
                     $('#submit-location-button').text('Update');
                 });
@@ -58,7 +58,6 @@ $(document).ready( function () {
     // Send form data to add new location to table
     function addNewLocation() {
         let formData = $( "#location-form" ).serializeObject();
-        console.log(formData);
         $.post('./php/backend.php',
         { action: 'addNewLocation',
             form: formData },
@@ -72,7 +71,7 @@ $(document).ready( function () {
     function clearForm() {
         $('#entry-id').val('');
         $('#location-name').val('');
-        $("input[name=status][value='not-visited']").prop("checked", true);
+        $("input[name=status][value='not-visited']").prop("checked", true).trigger('change');
         $('#date-visited').val('');
         $('#notes').val('');
         $('#submit-location-button').text('Add');
@@ -135,6 +134,15 @@ $(document).ready( function () {
 
     // Setup default state of add location form
     function configureForm() {
+
+        $('input[name=status]').on('change', function() {
+            let status = $('input[name=status]:checked', '#location-form').val();
+            if (status == 'not-visited') {
+                $('#date-visited').prop('disabled', true).val('');
+            } else {
+                $('#date-visited').prop('disabled', false);
+            }
+        });
 
         // Add form submission functionality
         $('#location-form').on('submit', function(event) {
