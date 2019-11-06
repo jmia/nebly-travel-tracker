@@ -42,6 +42,7 @@ $(document).ready( function () {
 
     // Send form data to add new location to table
     function addNewLocation() {
+        console.log("add called");
         let formData = $( "#location-form" ).serializeObject();
         console.log(formData);
         $.post('./php/backend.php',
@@ -128,7 +129,7 @@ $(document).ready( function () {
 
         // Add form submission functionality
         $('#location-form').on('submit', function(event) {
-            if ($('#entry_id').val() != "") {
+            if ($('#entry-id').val() != "") {
                 // Edit location
             } else {
                 addNewLocation();
