@@ -9,6 +9,24 @@ $(document).ready( function () {
         }
     });
 
+    function adjustMobileSettings(x) {
+        if (x.matches) { // If media query matches
+          $('#add-button-container').addClass('fixed-bottom p-3');
+          $('#map-table-container').addClass('mb-5');
+          map.setOptions({
+              zoom: 2,
+              disablePanning: true
+          });
+        } else {
+            $('#add-button-container').removeClass('fixed-bottom');
+            $('#map-table-container').removeClass('mb-5');
+            map.setOptions({
+                zoom: 3,
+                disablePanning: false
+            });
+        }
+      }
+
     // Configure modal to work for edit & add
     $('#location-modal').on('show.bs.modal', function (event) {
         let button = $(event.relatedTarget); // Button that triggered the modal
@@ -35,6 +53,7 @@ $(document).ready( function () {
                     }
                     $("input[name=status]").trigger('change');
                     
+                    $('.modal-title').text('Update a Destination');
                     $('#submit-location-button').text('Update');
                 });
             } catch (error) {
@@ -53,6 +72,10 @@ $(document).ready( function () {
         loadMapScenario();
         configureForm();
         configureDataTables();
+
+        var x = window.matchMedia("(max-width: 576px)")
+        stickyButton(x) // Call listener function at run time
+        x.addListener(stickyButton) // Attach listener function on state changes
     });
 
     // Send form data to add new location to table
@@ -74,6 +97,7 @@ $(document).ready( function () {
         $("input[name=status][value='not-visited']").prop("checked", true).trigger('change');
         $('#date-visited').val('');
         $('#notes').val('');
+        $('.modal-title').text('Add a Destination');
         $('#submit-location-button').text('Add');
     }
 
@@ -82,6 +106,7 @@ $(document).ready( function () {
 
         $('#map-table').DataTable( {
             responsive: true,
+            searching: false,
             pageLength: 5,
             lengthChange: false,    // Prevents user-defined page lengths
             ajax: {
@@ -93,20 +118,26 @@ $(document).ready( function () {
             },
             columns: [
                 {
+                    responsivePriority: 1,
                     className: 'details-control',
                     orderable:      false,
                     data:           null,
                     defaultContent: ''
                 },
-                { data: 'location',
+                { 
+                    data: 'location',
+                    responsivePriority: 2,
                     className: 'all' },
-                { data: 'notes',
+                { 
+                    data: 'notes',
                     className: 'none' },    // No priority, should push to child row
-                { data: 'dateVisited',
+                { 
+                    data: 'dateVisited',
                     type: 'date',
-                    responsivePriority: 3 
+                    responsivePriority: 5 
                 },
-                { data: 'status',
+                { 
+                    data: 'status',
                     responsivePriority: 4,
                     render: function(data, type, row) {
                         if (row.status == "visited") {
@@ -117,12 +148,12 @@ $(document).ready( function () {
                     }  
                 },
                 { // uses ID for rendering edit & delete buttons
-                    responsivePriority: 2,
+                    responsivePriority: 3,
                     render: function ( data, type, row ) {
                         var deleteButtonId = "delete-id-"+row.id;
                         var editButtonId = "edit-id-"+row.id;
-                        return '<button id='+deleteButtonId+' class="btn btn-danger delete-button"><i class="fas fa-trash"></i></button> '+
-                        '<button id='+editButtonId+' data-toggle="modal" data-target="#location-modal" data-action="edit" data-id='+row.id+' class="btn btn-primary"><i class="fas fa-edit"></i></button>';
+                        return '<button id='+deleteButtonId+' class="btn btn-sm btn-danger delete-button"><i class="fas fa-trash"></i></button> '+
+                        '<button id='+editButtonId+' data-toggle="modal" data-target="#location-modal" data-action="edit" data-id='+row.id+' class="btn btn-sm btn-primary edit-button"><i class="fas fa-edit"></i></button>';
                     }
                 }
             ]
@@ -202,8 +233,8 @@ $(document).ready( function () {
     // Setup Bing Maps
     function loadMapScenario() {
         map = new Microsoft.Maps.Map(document.getElementById('bing-map'), {
-            center: new Microsoft.Maps.Location(45.7019294,-94.5174798,4.9),
-            zoom: 3
+            center: new Microsoft.Maps.Location(50.104638, -100.933507),
+            zoom: 3,
         });
     }
 
