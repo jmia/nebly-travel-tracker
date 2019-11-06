@@ -111,8 +111,8 @@ $(document).ready( function () {
                     render: function ( data, type, row ) {
                         var deleteButtonId = "delete-id-"+row.id;
                         var editButtonId = "edit-id-"+row.id;
-                        return '<button id='+deleteButtonId+' class="btn btn-danger delete-button">Delete</button>'+
-                        '<button id='+editButtonId+' data-toggle="modal" data-target="#location-modal" data-action="edit" data-id='+row.id+' class="btn btn-primary">Edit</button>';
+                        return '<button id='+deleteButtonId+' class="btn btn-danger delete-button"><i class="fas fa-trash"></i></button> '+
+                        '<button id='+editButtonId+' data-toggle="modal" data-target="#location-modal" data-action="edit" data-id='+row.id+' class="btn btn-primary"><i class="fas fa-edit"></i></button>';
                     }
                 }
             ],
