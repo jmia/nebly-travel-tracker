@@ -23,7 +23,7 @@ $(document).ready( function () {
                 console.log(data);
                 $('#entry-id').val(id);
                 $('#location-name').val(data['location']);
-                // TODO: status & location type
+                // TODO: status
                 $('#date-visited').val(data['dateVisited']);
                 $('#notes').val(data['notes']);
 
@@ -61,7 +61,6 @@ $(document).ready( function () {
         $("input[name=status][value='not visited']").prop("checked", true);
         $('#date-visited').val('');
         $('#notes').val('');
-        $("#location-type").prop("selectedIndex", -1);
         $('#notes').val('');
         $('#submit-location-button').text('Add');
     }
@@ -87,12 +86,6 @@ $(document).ready( function () {
             columns: [
                 { data: 'location',
                     className: 'all' },
-                { data: 'locationType',
-                    responsivePriority: 5,
-                    render: function(data, type, row) {
-                        return data.substr(0,1).toUpperCase()+data.substr(1);   // Capitalizes first word
-                    } 
-                },
                 { data: 'notes',
                     className: 'none' },    // No priority, should push to child row
                 { data: 'dateVisited',
@@ -117,10 +110,10 @@ $(document).ready( function () {
             ],
             "createdRow": function( row, data, dataIndex, cells ) {             // Dynamic highlighting
                 if ( data["status"] == "visited" ) {
-                  $(cells[4]).addClass( 'table-success' );
+                  $(cells[3]).addClass( 'table-success' );
                 }
                 else if ( data["status"] == "not visited" ) {
-                    $(cells[4]).addClass( 'table-warning' );
+                    $(cells[3]).addClass( 'table-warning' );
                   }
               }
         } );
@@ -145,9 +138,6 @@ $(document).ready( function () {
             $('#location-modal').modal('hide');
             event.preventDefault();
         });
-
-        // Set dropdown list to deselected to force user to choose
-        $("#location-type").prop("selectedIndex", -1);
     }
 
     function deleteLocation(id) {
@@ -186,47 +176,24 @@ $(document).ready( function () {
         });
     }
 
-    function getLocationBoundaries(locations) {
+    function getLocationBoundaries(locationData) {
         map.entities.clear();
 
-        // Split entries into states & countries for separate entity types
-        var countries = [];
-        var statesAndProvinces = [];
+        var locations = [];
 
-        for (var i = 0; i < locations.length; i++) {
-            if (locations[i]["locationType"] == "country") {
-                countries.push(locations[i]["location"]);
-            } else {
-                statesAndProvinces.push(locations[i]["location"]);
-            }
+        // Extract location names for search
+        for (var i = 0; i < locationData.length; i++) {
+            locations.push(locationData[i]["location"]);
         }
 
         //Create an array of locations to get the boundaries of
         var geoDataRequestOptions = {
-            entityType: 'CountryRegion',
+            entityType: 'AdminDivision1',
             getAllPolygons: false
         };
         Microsoft.Maps.loadModule('Microsoft.Maps.SpatialDataService', function () {
             //Use the GeoData API manager to get the boundary
-            Microsoft.Maps.SpatialDataService.GeoDataAPIManager.getBoundary(countries, geoDataRequestOptions, map, function (data) {
-                if (data.results && data.results.length > 0) {
-                    map.entities.push(data.results[0].Polygons);
-                }
-            }, null, function errCallback(callbackState, networkStatus, statusMessage) {
-                console.log(callbackState);
-                console.log(networkStatus);
-                console.log(statusMessage);
-            });
-        });
-
-        //Create an array of locations to get the boundaries of
-        var geoDataRequestOptions = {
-            entityType: 'AdminDivision1',
-            getAllPolygons: true
-        };
-        Microsoft.Maps.loadModule('Microsoft.Maps.SpatialDataService', function () {
-            //Use the GeoData API manager to get the boundary
-            Microsoft.Maps.SpatialDataService.GeoDataAPIManager.getBoundary(statesAndProvinces, geoDataRequestOptions, map, function (data) {
+            Microsoft.Maps.SpatialDataService.GeoDataAPIManager.getBoundary(locations, geoDataRequestOptions, map, function (data) {
                 if (data.results && data.results.length > 0) {
                     map.entities.push(data.results[0].Polygons);
                 }

@@ -14,7 +14,6 @@ if($_REQUEST["action"] == "getAllLocations") {
     if($success) {
         while ($row = $stmt->fetch()) {
             $location = array(  "location"      => $row["location"], 
-                                "locationType"  => $row["location_type"], 
                                 "dateVisited"   => $row["date_visited"], 
                                 "status"        => $row["status"], 
                                 "notes"         => $row["notes"],
@@ -39,7 +38,6 @@ if($_REQUEST["action"] == "getLocationById") {
     if ($success) {
         while ($row = $stmt->fetch()) {
             $location = array(  "location"      => $row["location"], 
-                                "locationType"  => $row["location_type"], 
                                 "dateVisited"   => $row["date_visited"], 
                                 "status"        => $row["status"], 
                                 "notes"         => $row["notes"],
@@ -57,14 +55,13 @@ if($_REQUEST["action"] == "addNewLocation") {
     $form = $_REQUEST["form"];
     
     $locationName = $form["location-name"];
-    $type = $form["location-type"];
     $date = $form["date-visited"] == "" ? NULL : $form["date-visited"];
     $status = $form["status"] == "not-visited" ? "not visited" : "visited";     // Remove the hyphen from not-visited
     $notes = $form["notes"];
 
-    $command = "INSERT INTO $table_name (`location`, `location_type`, `date_visited`, `status`, `notes`) VALUES (?,?,?,?,?)";
+    $command = "INSERT INTO $table_name (`location`, `date_visited`, `status`, `notes`) VALUES (?,?,?,?)";
     $stmt = $conn->prepare($command);
-    $params = [$locationName, $type, $date, $status, $notes];
+    $params = [$locationName, $date, $status, $notes];
     $success = $stmt->execute($params);
 
     if ($success) {
@@ -80,14 +77,13 @@ if($_REQUEST["action"] == "editLocation") {
     
     $id = $form["id"];
     $locationName = $form["location-name"];
-    $type = $form["location-type"];
     $date = $form["date-visited"] == "" ? NULL : $form["date-visited"];
     $status = $form["status"] == "not-visited" ? "not visited" : "visited";     // Remove the hyphen from not-visited
     $notes = $form["notes"];
 
-    $command = "UPDATE $table_name SET `location`=?, `location_type`=?, `date_visited`=?, `status`=?, `notes`=? WHERE `id`=?";
+    $command = "UPDATE $table_name SET `location`=?, `date_visited`=?, `status`=?, `notes`=? WHERE `id`=?";
     $stmt = $conn->prepare($command);
-    $params = [$locationName, $type, $date, $status, $notes, $id];
+    $params = [$locationName, $date, $status, $notes, $id];
     $success = $stmt->execute($params);
 
     if ($success) {
