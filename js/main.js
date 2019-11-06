@@ -1,6 +1,6 @@
 $(document).ready( function () {
     // Global variables
-    var map, stuffINeed;
+    var map;
 
     $(document).on('click', '.delete-button', function () {
         var id = this.id.replace(/delete-id-/, '');
@@ -18,12 +18,12 @@ $(document).ready( function () {
         if (action == 'edit') {
             let id = button.data('id');
 
-            // Why doesn't this get any data?
+            // Why does this call succeed but callback never fires?
             getLocationById(id).then( (data) => function(data) {
+                console.log(data);
                 $('#entry-id').val(id);
                 $('#location-name').val(data['location']);
-                //$('#location-type').val(location['locationType']);
-                // TODO: status
+                // TODO: status & location type
                 $('#date-visited').val(data['dateVisited']);
                 $('#notes').val(data['notes']);
 
@@ -56,7 +56,14 @@ $(document).ready( function () {
     }
 
     function clearForm() {
-
+        $('#entry-id').val('');
+        $('#location-name').val('');
+        $("input[name=status][value='not visited']").prop("checked", true);
+        $('#date-visited').val('');
+        $('#notes').val('');
+        $("#location-type").prop("selectedIndex", -1);
+        $('#notes').val('');
+        $('#submit-location-button').text('Add');
     }
 
     // Setup DataTables
@@ -134,7 +141,7 @@ $(document).ready( function () {
             } else {
                 addNewLocation();
             }
-            // Clear form (particularly ID)
+            clearForm();
             $('#location-modal').modal('hide');
             event.preventDefault();
         });
@@ -179,14 +186,14 @@ $(document).ready( function () {
         });
     }
 
-    function getLocationBoundaries(dataSet) {
+    function getLocationBoundaries(locations) {
         map.entities.clear();
 
         // Split entries into states & countries for separate entity types
         var countries = [];
         var statesAndProvinces = [];
 
-        for (var i = 0; i < dataSet.length; i++) {
+        for (var i = 0; i < locations.length; i++) {
             if (dataSet[i]["locationType"] == "country") {
                 countries.push(dataSet[i]["location"]);
             } else {
