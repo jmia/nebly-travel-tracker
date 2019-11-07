@@ -1,7 +1,106 @@
+// As of now, missing requirements are:
+// - Quick-add location by clicking. This feature turned out to be very messy to implement with mobile. It was abandoned.
+// - Colour coding legend. I still want to build this, but it completely disrupts the minimalist layout and needs more work.
+// - Responsive cards. Again, I still want to build this. Implementing this app with DataTables has taught me that while 
+//      dynamically generating a table from an Ajax call is slick, it doesn't leave a lot of room for outside-the-box customization. 
+// - Adding countries. Bing Maps API has reported that polygon data for broad entity types are unreliable. 
+//      To keep the app looking smooth, these were factored out, and I kept states & provinces instead.
+
+// This was a very tiny app that gave me loads of experience configuring plugins, debugging PHP, and learning about async functions.
+// Looking forward to building this out a bit more if I can find the time.
+
+// j.m.i-a.
+
 $(document).ready( function () {
     // Global variables
     var map;
 
+    // INITIAL CONFIG ===============================================
+
+    // Load map, form, and datatable when DOM finishes rendering
+    $(window).on('load', function() {
+        loadMapScenario();
+        configureForm();
+        configureDataTables();
+
+        // Run a check on device width when it changes to trigger some custom responsive jQuery
+        var mediaMatch = window.matchMedia("(max-width: 576px)")
+        adjustMobileSettings(mediaMatch)
+        mediaMatch.addListener(adjustMobileSettings)
+    });
+
+    // Setup DataTables
+    function configureDataTables() {
+
+        $('#map-table').DataTable( {
+            responsive: true,                           // Adds responsive breakpoints
+            searching: false,
+            order: [[ 1, 'asc' ], [ 3, 'asc' ]],        // Sorts by name, then date
+            pageLength: 5,
+            lengthChange: false,
+            ajax: {                                     // Data source for table from back end
+                url: './php/backend.php',
+                data: {
+                    action: 'getAllLocations'
+                },
+                dataSrc: ''
+            },
+            columns: [                                  // Define order, sorting, rendering
+                {                                       // & responsive show/hide priority of all columns
+                    responsivePriority: 1,
+                    className: 'details-control',
+                    orderable:      false,
+                    data:           null,
+                    defaultContent: ''
+                },
+                { 
+                    data: 'location',
+                    responsivePriority: 2,
+                    className: 'all' },
+                { 
+                    data: 'notes',
+                    className: 'none' },
+                { 
+                    data: 'dateVisited',
+                    type: 'date',
+                    responsivePriority: 5 
+                },
+                { 
+                    data: 'status',
+                    responsivePriority: 4,
+                    render: function(data, type, row) {
+                        if (row.status == "visited") {
+                            return '<i class="fas fa-check-square"></i>';   // Shows checkbox if visited
+                        } else {
+                            return '';
+                        }
+                    }  
+                },
+                {
+                    responsivePriority: 3,                                  // Creates static buttons for edit/delete
+                    render: function ( data, type, row ) {                  // tied to location ID
+                        var deleteButtonId = "delete-id-"+row.id;
+                        var editButtonId = "edit-id-"+row.id;
+                        return '<button id='+deleteButtonId+' class="btn btn-sm btn-danger delete-button"><i class="fas fa-trash"></i></button> '+
+                        '<button id='+editButtonId+' data-toggle="modal" data-target="#location-modal" data-action="edit" data-id='+row.id+' class="btn btn-sm btn-primary edit-button"><i class="fas fa-edit"></i></button>';
+                    }
+                }
+            ]
+        } );
+
+    }
+
+    // Setup Bing Maps
+    function loadMapScenario() {
+        map = new Microsoft.Maps.Map(document.getElementById('bing-map'), {
+            center: new Microsoft.Maps.Location(50.104638, -100.933507),    // Somewhere in Alberta to center the map on NA
+            zoom: 3,
+        });
+    }
+
+    // EVENT HANDLERS ===============================================
+
+    // Pop delete alert
     $(document).on('click', '.delete-button', function () {
         var id = this.id.replace(/delete-id-/, '');
         if (confirm("Are you sure you want to delete this entry?")) {
@@ -9,25 +108,7 @@ $(document).ready( function () {
         }
     });
 
-    function adjustMobileSettings(x) {
-        if (x.matches) { // If media query matches
-          $('#add-button-container').addClass('fixed-bottom p-3');
-          $('#map-table-container').addClass('mb-5');
-          map.setOptions({
-              zoom: 2,
-              disablePanning: true
-          });
-        } else {
-            $('#add-button-container').removeClass('fixed-bottom');
-            $('#map-table-container').removeClass('mb-5');
-            map.setOptions({
-                zoom: 3,
-                disablePanning: false
-            });
-        }
-      }
-
-    // Configure modal to work for edit & add
+    // Configure modal to work for both edit & add
     $('#location-modal').on('show.bs.modal', function (event) {
         let button = $(event.relatedTarget); // Button that triggered the modal
         let action = button.data('action');
@@ -35,6 +116,7 @@ $(document).ready( function () {
         if (action == 'edit') {
             let id = button.data('id');
 
+            // Get a location from database and fill form with current values
             try {
                 $.get('./php/backend.php',
                         { action: 'getLocationById',
@@ -51,6 +133,7 @@ $(document).ready( function () {
                     } else {
                         $("input[name=status][value='visited']").prop("checked", true);
                     }
+                    // Manually fire the status event to disable the date field if applicable
                     $("input[name=status]").trigger('change');
                     
                     $('.modal-title').text('Update a Destination');
@@ -63,127 +146,20 @@ $(document).ready( function () {
 
     });
 
+    // Clear the form anytime the modal closes (submit or cancel)
     $('#location-modal').on('hidden.bs.modal', function (e) {
         clearForm();
-      })
+    })
 
-    // Load map when DOM finishes rendering
-    $(window).on('load', function() {
-        loadMapScenario();
-        configureForm();
-        configureDataTables();
-
-        var x = window.matchMedia("(max-width: 576px)")
-        adjustMobileSettings(x) // Call listener function at run time
-        x.addListener(adjustMobileSettings) // Attach listener function on state changes
+    // Redraw the map whenever the data table reloads (i.e. after each Ajax success)
+    $('#map-table').on('xhr.dt', function (e, settings, json, xhr) {
+        getLocationBoundaries(json);
     });
 
-    // Send form data to add new location to table
-    function addNewLocation() {
-        let formData = $( "#location-form" ).serializeObject();
-        $.post('./php/backend.php',
-        { action: 'addNewLocation',
-            form: formData },
-        
-        function (data) {
-            console.log(data);
-        });
-        $('#map-table').DataTable().ajax.reload();
-    }
-
-    function clearForm() {
-        $('#entry-id').val('');
-        $('#location-name').val('');
-        $("input[name=status][value='not-visited']").prop("checked", true).trigger('change');
-        $('#date-visited').val('');
-        $('#notes').val('');
-        $('.modal-title').text('Add a Destination');
-        $('#submit-location-button').text('Add');
-    }
-
-    // Setup DataTables
-    function configureDataTables() {
-
-        $('#map-table').DataTable( {
-            responsive: true,
-            searching: false,
-            pageLength: 5,
-            lengthChange: false,    // Prevents user-defined page lengths
-            ajax: {
-                url: './php/backend.php',
-                data: {
-                    action: 'getAllLocations'
-                },
-                dataSrc: ''
-            },
-            columns: [
-                {
-                    responsivePriority: 1,
-                    className: 'details-control',
-                    orderable:      false,
-                    data:           null,
-                    defaultContent: ''
-                },
-                { 
-                    data: 'location',
-                    responsivePriority: 2,
-                    className: 'all' },
-                { 
-                    data: 'notes',
-                    className: 'none' },    // No priority, should push to child row
-                { 
-                    data: 'dateVisited',
-                    type: 'date',
-                    responsivePriority: 5 
-                },
-                { 
-                    data: 'status',
-                    responsivePriority: 4,
-                    render: function(data, type, row) {
-                        if (row.status == "visited") {
-                            return '<i class="fas fa-check-square"></i>';
-                        } else {
-                            return '';
-                        }
-                    }  
-                },
-                { // uses ID for rendering edit & delete buttons
-                    responsivePriority: 3,
-                    render: function ( data, type, row ) {
-                        var deleteButtonId = "delete-id-"+row.id;
-                        var editButtonId = "edit-id-"+row.id;
-                        return '<button id='+deleteButtonId+' class="btn btn-sm btn-danger delete-button"><i class="fas fa-trash"></i></button> '+
-                        '<button id='+editButtonId+' data-toggle="modal" data-target="#location-modal" data-action="edit" data-id='+row.id+' class="btn btn-sm btn-primary edit-button"><i class="fas fa-edit"></i></button>';
-                    }
-                }
-            ]
-        } );
-
-        // Redraw the map whenever new Ajax calls are made
-        $('#map-table').on('xhr.dt', function (e, settings, json, xhr) {
-            getLocationBoundaries(json);
-        });
-
-        $('#map-table tbody').on('click', 'td.details-control', function () {
-            var tr = $(this).closest('tr');
-            var row = table.row( tr );
-     
-            if ( row.child.isShown() ) {
-                // This row is already open - close it
-                row.child.hide();
-                tr.removeClass('shown');
-            }
-            else {
-                // Open this row
-                row.child( format(row.data()) ).show();
-                tr.addClass('shown');
-            }
-        } );
-    }
-
-    // Setup default state of add location form
+    // Setup default state of modal form
     function configureForm() {
 
+        // Disable the date field if location is marked 'not visited'
         $('input[name=status]').on('change', function() {
             let status = $('input[name=status]:checked', '#location-form').val();
             if (status == 'not-visited') {
@@ -195,6 +171,7 @@ $(document).ready( function () {
 
         // Add form submission functionality
         $('#location-form').on('submit', function(event) {
+            // If an ID exists, it's an edit request
             let id = $('#entry-id').val();
             if (id != "") {
                 editLocation(id);
@@ -206,17 +183,84 @@ $(document).ready( function () {
         });
     }
 
-    function deleteLocation(id) {
-        $.post('./php/backend.php',
-        { action: 'deleteLocation',
-            id: id },
+    // HELPER METHODS ===============================================
 
-        function (data) {
-            console.log(data);
-        });
-        $('#map-table').DataTable().ajax.reload();
+    // Add/remove some custom responsive classes
+    function adjustMobileSettings(mediaMatch) {
+        if (mediaMatch.matches) { // If media query matches (i.e. mobile device view)
+          $('#add-button-container').addClass('fixed-bottom p-3');          // Make button sticky at bottom
+          $('#map-table-container').addClass('mb-5');                       // Give room under table on mobile for pagination
+          map.setOptions({                                                  // Prevent user panning map, zoom out slightly
+              zoom: 2,
+              disablePanning: true
+          });
+        } else {
+            $('#add-button-container').removeClass('fixed-bottom');
+            $('#map-table-container').removeClass('mb-5');
+            map.setOptions({
+                zoom: 3,
+                disablePanning: false
+            });
+        }
+      }
+
+    // Reset the modal form to empty values
+    function clearForm() {
+        $('#entry-id').val('');
+        $('#location-name').val('');
+        $("input[name=status][value='not-visited']").prop("checked", true).trigger('change');
+        $('#date-visited').val('');
+        $('#notes').val('');
+        $('.modal-title').text('Add a Destination');
+        $('#submit-location-button').text('Add');
     }
 
+    /*!
+    * jQuery serializeObject - v0.2 - 1/20/2010
+    * http://benalman.com/projects/jquery-misc-plugins/
+    * 
+    * Copyright (c) 2010 "Cowboy" Ben Alman
+    * Dual licensed under the MIT and GPL licenses.
+    * http://benalman.com/about/license/
+    */
+
+    // Whereas .serializeArray() serializes a form into an array, .serializeObject()
+    // serializes a form into an (arguably more useful) object.
+    (function($,undefined){
+        '$:nomunge'; // Used by YUI compressor.
+    
+        $.fn.serializeObject = function(){
+        var obj = {};
+    
+        $.each( this.serializeArray(), function(i,o){
+            var n = o.name,
+            v = o.value;
+    
+            obj[n] = obj[n] === undefined ? v
+                : $.isArray( obj[n] ) ? obj[n].concat( v )
+                : [ obj[n], v ];
+        });
+    
+        return obj;
+        };
+    
+    })(jQuery);
+
+    // CRUD FUNCTIONALITY ===========================================
+
+    // Create new location
+    function addNewLocation() {
+        let formData = $( "#location-form" ).serializeObject();
+        $.post('./php/backend.php',
+        { action: 'addNewLocation',
+            form: formData },
+        
+        function (data) {
+            $('#map-table').DataTable().ajax.reload();
+        });
+    }
+
+    // Update location by ID
     function editLocation(id) {
         let formData = $( "#location-form" ).serializeObject();
         $.post('./php/backend.php',
@@ -225,19 +269,24 @@ $(document).ready( function () {
             id: id },
         
         function (data) {
-            console.log(data);
-        });
-        $('#map-table').DataTable().ajax.reload();
-    }
-    
-    // Setup Bing Maps
-    function loadMapScenario() {
-        map = new Microsoft.Maps.Map(document.getElementById('bing-map'), {
-            center: new Microsoft.Maps.Location(50.104638, -100.933507),
-            zoom: 3,
+            $('#map-table').DataTable().ajax.reload();
         });
     }
 
+    // Delete location by ID
+    function deleteLocation(id) {
+        $.post('./php/backend.php',
+        { action: 'deleteLocation',
+            id: id },
+
+        function (data) {
+            $('#map-table').DataTable().ajax.reload();
+        });
+    }
+
+    // MAP API METHODS ==============================================
+    
+    // Get polygons to render states & provinces on the map
     function getLocationBoundaries(locationData) {
         map.entities.clear();
 
@@ -245,7 +294,7 @@ $(document).ready( function () {
         var visitedLocations = [];
         var unvisitedLocations = [];
 
-        // Extract unique location names by status
+        // Extract unique location names and divide by status
         for (var i = 0; i < locationData.length; i++) {
 
             if (locationData[i]["status"] == "not visited") {
@@ -303,35 +352,6 @@ $(document).ready( function () {
         });
     }
 
-    /*!
-    * jQuery serializeObject - v0.2 - 1/20/2010
-    * http://benalman.com/projects/jquery-misc-plugins/
-    * 
-    * Copyright (c) 2010 "Cowboy" Ben Alman
-    * Dual licensed under the MIT and GPL licenses.
-    * http://benalman.com/about/license/
-    */
 
-    // Whereas .serializeArray() serializes a form into an array, .serializeObject()
-    // serializes a form into an (arguably more useful) object.
-    (function($,undefined){
-        '$:nomunge'; // Used by YUI compressor.
-    
-        $.fn.serializeObject = function(){
-        var obj = {};
-    
-        $.each( this.serializeArray(), function(i,o){
-            var n = o.name,
-            v = o.value;
-    
-            obj[n] = obj[n] === undefined ? v
-                : $.isArray( obj[n] ) ? obj[n].concat( v )
-                : [ obj[n], v ];
-        });
-    
-        return obj;
-        };
-    
-    })(jQuery);
 
 } );

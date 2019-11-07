@@ -53,9 +53,19 @@ if($_REQUEST["action"] == "getLocationById") {
 
 if($_REQUEST["action"] == "addNewLocation") {
     $form = $_REQUEST["form"];
-    
+  
     $locationName = $form["location-name"];
-    $date = $form["date-visited"] == "" ? NULL : $form["date-visited"];
+
+    if (isset($form["date-visited"])) {
+        if ($form["date-visited"] != "") {
+            $date = $form["date-visited"];
+        } else {
+            $date = NULL;
+        }
+    } else {
+        $date = NULL;
+    }
+
     $status = $form["status"] == "not-visited" ? "not visited" : "visited";     // Remove the hyphen from not-visited
     $notes = $form["notes"];
 
@@ -65,9 +75,9 @@ if($_REQUEST["action"] == "addNewLocation") {
     $success = $stmt->execute($params);
 
     if ($success) {
-        echo 1;
+        echo "ADD SUCCESS";
     } else {
-        echo 0;
+        echo "ERROR";
     }
 
 }
@@ -77,7 +87,15 @@ if($_REQUEST["action"] == "updateLocation") {
     $id = $_REQUEST["id"];
     
     $locationName = $form["location-name"];
-    $date = $form["date-visited"] == "" ? NULL : $form["date-visited"];
+    
+    if (isset($form["date-visited"])) {
+        if ($form["date-visited"] != "") {
+            $date = $form["date-visited"];
+        }
+    } else {
+        $date = NULL;
+    }
+    
     $status = $form["status"] == "not-visited" ? "not visited" : "visited";     // Remove the hyphen from not-visited
     $notes = $form["notes"];
 
@@ -87,9 +105,9 @@ if($_REQUEST["action"] == "updateLocation") {
     $success = $stmt->execute($params);
 
     if ($success) {
-        echo 1;
+        echo "EDIT SUCCESS";
     } else {
-        echo 0;
+        echo "ERROR";
     }
 }
 
@@ -102,9 +120,9 @@ if($_REQUEST["action"] == "deleteLocation") {
     $success = $stmt->execute($params);
 
     if ($success) {
-        echo 1;
+        echo "REMOVE SUCCESS";
     } else {
-        echo 0;
+        echo "ERROR";
     }
 }
 
