@@ -1,2 +1,5 @@
 # exclude connection object
 php/connect.php
+
+# exclude bootstrap & scss files
+/bootstrap/*

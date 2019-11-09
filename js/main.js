@@ -1,9 +1,10 @@
 // As of now, missing requirements are:
-// - Quick-add location by clicking. This feature turned out to be very messy to implement with mobile. It was abandoned.
+// - Quick-add location by clicking. Reverse-geocoding using the web controls doesn't support entity-based return types, only full addresses. 
+//      This would be a mess to convert into a state or province.
 // - Colour coding legend. I still want to build this, but it completely disrupts the minimalist layout and needs more work.
 // - Responsive cards. Again, I still want to build this. Implementing this app with DataTables has taught me that while 
 //      dynamically generating a table from an Ajax call is slick, it doesn't leave a lot of room for outside-the-box customization. 
-// - Adding countries. Bing Maps API has reported that polygon data for broad entity types are unreliable. 
+// - Adding countries. Bing Maps API has reported that polygon data for broad entity types are not properly supported. 
 //      To keep the app looking smooth, these were factored out, and I kept states & provinces instead.
 
 // This was a very tiny app that gave me loads of experience configuring plugins, debugging PHP, and learning about async functions.
@@ -95,7 +96,17 @@ $(document).ready( function () {
         map = new Microsoft.Maps.Map(document.getElementById('bing-map'), {
             center: new Microsoft.Maps.Location(50.104638, -100.933507),    // Somewhere in Alberta to center the map on NA
             zoom: 3,
+            customMapStyle: {
+                elements: {
+                    water: { fillColor: '#4041D3BD' },
+                },
+                settings: {
+                    landColor: '#FFFFF2'
+                }
+            }
         });
+
+        // Microsoft.Maps.Events.addHandler(map, 'rightclick', function (e) { quickAddLocation(e); });
     }
 
     // EVENT HANDLERS ===============================================
@@ -318,8 +329,8 @@ $(document).ready( function () {
             
             // Set colour for not visited locations
             var polygonStyle = {
-                fillColor: 'rgba(255,255,0,0.4)',
-                strokeColor: '#aa6c39',
+                fillColor: 'rgba(242,193,78,0.4)',
+                strokeColor: '#F2C14E',
                 strokeThickness: 2
             };
             //Use the GeoData API manager to get the boundary
@@ -334,17 +345,17 @@ $(document).ready( function () {
             });
 
             // Set colour for visited locations
-            // var polygonStyle = {
-            //     fillColor: 'rgba(161,224,255,0.4)',
-            //     strokeColor: '#a495b2',
-            //     strokeThickness: 2
-            // };
+            var polygonStyle = {
+                fillColor: 'rgba(95,173,86,0.4)',
+                strokeColor: '#5FAD56',
+                strokeThickness: 2
+            };
             //Use the GeoData API manager to get the boundary
             Microsoft.Maps.SpatialDataService.GeoDataAPIManager.getBoundary(visitedLocations, geoDataRequestOptions, map, function (data) {
                 if (data.results && data.results.length > 0) {
                     map.entities.push(data.results[0].Polygons);
                 }
-            }, null, function errCallback(callbackState, networkStatus, statusMessage) {
+            }, polygonStyle, function errCallback(callbackState, networkStatus, statusMessage) {
                 console.log(callbackState);
                 console.log(networkStatus);
                 console.log(statusMessage);
@@ -352,6 +363,23 @@ $(document).ready( function () {
         });
     }
 
+    // function quickAddLocation(e) {
+
+    //     console.log(e);
+        
+    //     Microsoft.Maps.loadModule('Microsoft.Maps.Search', function () {
+    //         var searchManager = new Microsoft.Maps.Search.SearchManager(map);
+    //         var reverseGeocodeRequestOptions = {
+    //             includeEntityTypes: 'AdminDivision1',
+    //             location: new Microsoft.Maps.Location(47.640049, -122.129797),
+    //             callback: function (answer, userData) {
+    //                 console.log(answer);
+    //                 console.log(userData);
+    //             }
+    //         };
+    //         searchManager.reverseGeocode(reverseGeocodeRequestOptions);
+    //     });
+    // }
 
 
 } );

@@ -1,0 +1,19 @@
+// Custom.scss
+// Option A: Include all of Bootstrap
+
+@import "bootstrap-4.0.0/scss/bootstrap";
+
+:root {
+    --light: #FFFFFC;
+    --dark: #2F2F2C;
+}
+
+$theme-colors: (
+  "primary": #41D3BD,
+  "danger": #F78154,
+  "warning": #F2C14E,
+  "success": #5FAD56,
+);
+
+$body-bg: #FFFFF2;
+$body-color: #181816;

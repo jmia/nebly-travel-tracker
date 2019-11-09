@@ -2,6 +2,11 @@
     box-shadow: 4px 4px 3px grey;
 }
 
+#add-button:active {
+    box-shadow: 1px 1px 3px grey;
+    transform: translateY(4px) translateX(4px);
+}
+
 #map-container {
     height: 500px;
 }
@@ -16,7 +21,7 @@ td.child {
 }
 
 .fa-check-square {
-    color: green;
+    color: #5FAD56;
     font-size: 32px;
 }
 

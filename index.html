@@ -15,14 +15,16 @@
         <script type="text/javascript" src="https://kit.fontawesome.com/0c62297e67.js" crossorigin="anonymous"></script>
 
         <!-- Import Stylesheets for Bootstrap, DataTables -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-html5-1.6.1/fh-3.1.6/r-2.2.3/datatables.min.css"/>
-        <!-- https://datatables.net/manual/styling/theme-creator -->
+        
+        
         
         <!-- Import Site-specific Scripts & Stylesheets -->
         <script type="text/javascript" src="js/main.js"></script>
+        <link href="css/bootstrap.css" rel="stylesheet">
+        <link href="css/bootstrap-overrides.css" rel="stylesheet">
         <link href="css/site.css" rel="stylesheet">
         <link href="css/responsive.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-html5-1.6.1/fh-3.1.6/r-2.2.3/datatables.min.css"/>
 
     </head>
     <body>
@@ -39,7 +41,7 @@
                     <div id="bing-map"></div>
                 </div>
                 <div id="map-table-container" class="col-sm-6">
-                    <div id="add-button-container"><button id="add-button" class="btn btn-lg btn-block btn-primary mb-2 mt-2" data-toggle="modal" data-target="#location-modal" data-action="create">Let's go somewhere</button></div>
+                    <div id="add-button-container"><button id="add-button" class="btn btn-lg btn-block btn-primary mb-2 mt-2" data-toggle="modal" data-target="#location-modal" data-action="create">Add a Destination</button></div>
                     <table id="map-table" class="table table-responsive-sm table-striped table-bordered">
                         <thead>
                             <tr>
@@ -57,6 +59,9 @@
                     
                 </div> <!-- map table container -->
             </div> <!-- row -->
+            <div class="row">
+                <div class="col-sm-4"><p>To get started, tap the "Add a Destination" button or right-click/long-press a state or province.</p></div>
+            </div>
         </div> <!-- container -->
 
         <div class="modal fade" id="location-modal">
