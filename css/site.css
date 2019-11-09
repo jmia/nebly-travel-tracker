@@ -32,3 +32,34 @@ td.details-control {
 tr.shown td.details-control {
     background: no-repeat center center;
 }
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    color: #FFFFFC !important;
+    border: 1px solid #41D3BD!important;
+    background-color: #41D3BD!important;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #41D3BD), color-stop(100%, #41D3BD))!important;
+    background: -webkit-linear-gradient(top, #41D3BD 0%, #41D3BD 100%)!important;
+    background: -moz-linear-gradient(top, #41D3BD 0%, #41D3BD 100%)!important;
+    background: -ms-linear-gradient(top, #41D3BD 0%, #41D3BD 100%)!important;
+    background: -o-linear-gradient(top, #41D3BD 0%, #41D3BD 100%)!important;
+    background: linear-gradient(to bottom, #41D3BD 0%, #41D3BD 100%)!important;
+}
+
+.page-item.active .page-link {
+    z-index: 1;
+    color: #FFFFFC;
+    background-color: #41D3BD;
+    border-color: #41D3BD;
+}
+
+.page-link, .page-link:hover {
+    color: #41D3BD;
+}
+
+.custom-select.is-invalid, .form-control.is-invalid, .was-validated .custom-select:invalid, .was-validated .form-control:invalid {
+    border-color: #F78154;
+}
+
+.was-validated .form-control:valid, .form-control.is-valid, .was-validated .custom-select:valid, .custom-select.is-valid {
+    border-color: #5FAD56;
+}

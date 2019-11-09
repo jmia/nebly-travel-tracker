@@ -144,8 +144,6 @@ $(document).ready( function () {
                     } else {
                         $("input[name=status][value='visited']").prop("checked", true);
                     }
-                    // Manually fire the status event to disable the date field if applicable
-                    $("input[name=status]").trigger('change');
                     
                     $('.modal-title').text('Update a Destination');
                     $('#submit-location-button').text('Update');
@@ -154,6 +152,9 @@ $(document).ready( function () {
                 console.error(error);
             }
         }
+
+        // Manually fire the status event to disable the date field if applicable
+        $("input[name=status]").trigger('change');
 
     });
 
