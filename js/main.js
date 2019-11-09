@@ -7,8 +7,9 @@
 // - Adding countries. Bing Maps API has reported that polygon data for broad entity types are not properly supported. 
 //      To keep the app looking smooth, these were factored out, and I kept states & provinces instead.
 
-// This was a very tiny app that gave me loads of experience configuring plugins, debugging PHP, and learning about async functions.
-// Looking forward to building this out a bit more if I can find the time.
+// This was a very tiny app that gave me loads of experience configuring plugins, debugging PHP, dealing with async, and learning
+// how to compile SASS to CSS to customize Bootstrap theme colours. Very cool stuff. Overall I think I sunk about 50 hours into this project.
+// It's not flashy, but man, I built the crap out of it.
 
 // j.m.i-a.
 

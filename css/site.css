@@ -25,6 +25,11 @@ td.child {
     font-size: 32px;
 }
 
+.fa-globe-americas {
+    color: #41D3BD;
+    font-size: 40px;
+}
+
 td.details-control {
     background: no-repeat center center;
     cursor: pointer;
