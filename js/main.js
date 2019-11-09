@@ -97,6 +97,7 @@ $(document).ready( function () {
         map = new Microsoft.Maps.Map(document.getElementById('bing-map'), {
             center: new Microsoft.Maps.Location(50.104638, -100.933507),    // Somewhere in Alberta to center the map on NA
             zoom: 3,
+            showMapTypeSelector: false,
             customMapStyle: {
                 elements: {
                     water: { fillColor: '#4041D3BD' },
