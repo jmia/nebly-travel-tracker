@@ -1,16 +1,19 @@
+
+/* Drop shadow & animation for button */
 #add-button {
     box-shadow: 4px 4px 3px grey;
 }
-
 #add-button:active {
     box-shadow: 1px 1px 3px grey;
     transform: translateY(4px) translateX(4px);
 }
 
+/* Keep the map container from disappearing */
 #map-container {
     height: 500px;
 }
 
+/* Center text for table */
 td {
     text-align: center;
     vertical-align: middle;
@@ -20,16 +23,17 @@ td.child {
     text-align: left;
 }
 
+/* Colour icons */
 .fa-check-square {
     color: #5FAD56;
     font-size: 32px;
 }
-
 .fa-globe-americas {
     color: #41D3BD;
     font-size: 40px;
 }
 
+/* Data tables custom classes */
 td.details-control {
     background: no-repeat center center;
     cursor: pointer;
@@ -50,21 +54,40 @@ tr.shown td.details-control {
     background: linear-gradient(to bottom, #41D3BD 0%, #41D3BD 100%)!important;
 }
 
+/* Pagination */
 .page-item.active .page-link {
     z-index: 1;
     color: #FFFFFC;
     background-color: #41D3BD;
     border-color: #41D3BD;
 }
-
 .page-link, .page-link:hover {
     color: #41D3BD;
 }
 
+.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child:before, .dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>th:first-child:before {
+    color: white;
+    border: 2px solid white;
+    border-radius: 14px;
+    box-shadow: 0 0 3px #444;
+    box-sizing: content-box;
+    text-align: center;
+    text-indent: 0 !important;
+    font-family: 'Courier New', Courier, monospace;
+    line-height: 14px;
+    content: '+';
+    background-color: #41D3BD !important;
+}
+
+table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td:first-child:before, table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th:first-child:before {
+    content: '-';
+    background-color: #F78154 !important;
+}
+
+/* Bootstrap Form Validation (not yet supported by core theme colours) */
 .custom-select.is-invalid, .form-control.is-invalid, .was-validated .custom-select:invalid, .was-validated .form-control:invalid {
     border-color: #F78154;
 }
-
 .was-validated .form-control:valid, .form-control.is-valid, .was-validated .custom-select:valid, .custom-select.is-valid {
     border-color: #5FAD56;
 }
