@@ -12,15 +12,15 @@
         <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         <script type="text/javascript" src="https://www.bing.com/api/maps/mapcontrol?key=Av5vJY-MkRt2p5asCNDi1165_pNmuxmtr-ckRQzohBzefLwb6Wzc--b051-cJ7Xl"></script>
         <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-html5-1.6.1/fh-3.1.6/r-2.2.3/datatables.min.js"></script>
-        <!-- https://datatables.net/extensions/responsive/ -->
+        <script type="text/javascript" src="https://kit.fontawesome.com/0c62297e67.js" crossorigin="anonymous"></script>
 
         <!-- Import Stylesheets for Bootstrap, DataTables -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link href="css/bootstrap.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-html5-1.6.1/fh-3.1.6/r-2.2.3/datatables.min.css"/>
-        <!-- https://datatables.net/manual/styling/theme-creator -->
         
         <!-- Import Site-specific Scripts & Stylesheets -->
         <script type="text/javascript" src="js/main.js"></script>
+        <link href="css/bootstrap-overrides.css" rel="stylesheet">
         <link href="css/site.css" rel="stylesheet">
         <link href="css/responsive.css" rel="stylesheet">
 
@@ -28,23 +28,27 @@
     <body>
         <div class="container">
             <div class="row">
-                <h1>Your Travel Wishlist</h1>
+                <div class="col-sm-12">
+                    <h1><i class="fas fa-globe-americas"></i> Nebly
+                        <small class="text-muted">your digital travel tracker</small>
+                    </h1>
+                </div>
             </div>
-            <!-- TODO: Map, table, button, modal form -->
             <div class="row">
-                <div id="map-container" class="col-sm">
+                <div id="map-container" class="col-sm-6">
                     <div id="bing-map"></div>
                 </div>
-                <div id="map-table-container" class="col-sm">
-                    <button class="btn btn-block btn-primary mb-2" data-toggle="modal" data-target="#add-location-modal">Let's go somewhere</button>
+                <div id="map-table-container" class="col-sm-6">
+                    <div id="add-button-container"><button id="add-button" class="btn btn-lg btn-block btn-primary mb-2 mt-2" data-toggle="modal" data-target="#location-modal" data-action="create">Add a Destination</button></div>
                     <table id="map-table" class="table table-responsive-sm table-striped table-bordered">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>Location</th>
-                                <th>Type</th>
                                 <th>Notes</th>
                                 <th>Date</th>
-                                <th>Status</th>
+                                <th>Visited</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -53,9 +57,10 @@
                     
                 </div> <!-- map table container -->
             </div> <!-- row -->
+            <div class="row"><div class="col-12"><p>If you have completed a usability test, please <a href="https://forms.gle/HppV1S4zAnSyjFJT6" target="_blank">fill out a survey</a>.</p></div></div>
         </div> <!-- container -->
 
-        <div class="modal" id="add-location-modal">
+        <div class="modal fade" id="location-modal">
             <div class="modal-dialog">
               <div class="modal-content">
           
@@ -67,47 +72,42 @@
           
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <form action="" id="add-location-form" class="was-validated">
+                    <form action="index.html" id="location-form" class="was-validated">
                         <div class="form-group">
-                            <label for="location-name">Name</label>
-                            <input type="text" class="form-control" id="location-name" placeholder="e.g. California" name="location-name" required>
+                            <input type="hidden" class="form-control" id="entry-id" value="" />
                         </div>
                         <div class="form-group">
-                                <label for="location-type">Type of Location</label>
-                                <select class="form-control" id="location-type">
-                                  <option>State</option>
-                                  <option>Province</option>
-                                  <option>Country</option>
-                                </select>
+                            <label for="location-name">Name (State or Province)</label>
+                            <input type="text" class="form-control" id="location-name" placeholder="e.g. California" name="location-name" required>
                         </div>
                         <label>Status</label>
                         <div class="form-group">
                             <div class="form-check-inline">
                                 <label class="form-check-label">
-                                    <input type="radio" class="form-check-input" name="optradio" value="visited">Visited
+                                    <input type="radio" class="form-check-input" name="status" value="visited">Visited
                                 </label>
                             </div>
                             <div class="form-check-inline">
                                 <label class="form-check-label">
-                                    <input type="radio" class="form-check-input" name="optradio" value="not-visited" checked="">Not Visited
+                                    <input type="radio" class="form-check-input" name="status" value="not-visited" checked="">Not Visited
                                 </label>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="date-visited">Date Visited</label>
-                            <input type="date" class="form-control" name="date-visited">
+                            <input type="date" class="form-control" id="date-visited" name="date-visited">
                         </div>
                         <div class="form-group">
                                 <label for="notes">Notes</label>
-                                <textarea class="form-control" rows="5" id="notes" placeholder="What would you like to remember about this place?"></textarea>
-                              </div>
-                        <button type="submit" class="btn btn-block btn-primary">Add</button>
+                                <textarea class="form-control" rows="5" id="notes" name="notes" maxlength="5000" placeholder="What would you like to remember about this place? (5000 character limit)"></textarea>
+                        </div>
+                        <button type="submit" id="submit-location-button" class="btn btn-block btn-primary">Add</button>
                     </form>
                 </div>
           
               </div>
             </div>
-          </div>
+          </div> <!-- modal -->
 
     </body>
 </html>

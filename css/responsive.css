@@ -1,0 +1,11 @@
+@media only screen and (max-width: 576px) {
+    #map-container {
+        height: 400px;
+    }
+    #map-table-container {
+        padding-bottom: 150px;
+    }
+    #add-button-container {
+        background: #FFFFF2;
+    }
+}
