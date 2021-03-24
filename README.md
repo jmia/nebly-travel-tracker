@@ -1,5 +1,7 @@
 # nebly-travel-tracker
-A web application built with jQuery, PHP, and Bootstrap that uses Bing Maps and MySQL to store a travel "wish list." Completed as a final project for my 4th semester [HTML5 and Front End Web Development](https://www.mohawkcollege.ca/programs/technology/computer-systems-technology-software-development-559) course (now replaced by Mobile Web Programming). 
+A web application built with jQuery, PHP, and Bootstrap that uses Bing Maps and MySQL to store a travel "wish list." Completed as a final project for my 4th semester [HTML5 and Front End Web Development](https://www.mohawkcollege.ca/programs/technology/computer-systems-technology-software-development-559) course (now replaced by Mobile Web Programming).
+
+Named Nebly after the great [Nellie Bly](https://en.wikipedia.org/wiki/Nellie_Bly), an American journalist who traveled around the world in 72 days.
 
 ![Screenshot 2021-03-24 111124](https://user-images.githubusercontent.com/14793878/112335407-981bba80-8c92-11eb-8f7e-e8e6cbfe19e9.png)
 
